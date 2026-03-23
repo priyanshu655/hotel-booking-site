@@ -17,12 +17,10 @@ app.use(cors({
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         
-        // Replace with your Vercel frontend URL
         const allowedOrigins = [
             'http://localhost:5173', 
             'http://localhost:3000',
-            'https://planora-pi-eosin.vercel.app' // A common pattern for Vercel URLs
-            // Add your deployed frontend URL here if it's different
+            'https://planora-pi-eosin.vercel.app'
         ];
         
         if (allowedOrigins.indexOf(origin) === -1) {
@@ -32,6 +30,8 @@ app.use(cors({
         return callback(null, true);
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use("/api/auth",authRoutes);
 app.use("/api/hotels",hotelRoutes);
