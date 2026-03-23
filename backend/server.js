@@ -12,7 +12,27 @@ const cors=require('cors');
 
 connectDb();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        // Replace with your Vercel frontend URL
+        const allowedOrigins = [
+            'http://localhost:5173', 
+            'http://localhost:3000',
+            'https://planora-pi-eosin.vercel.app' // A common pattern for Vercel URLs
+            // Add your deployed frontend URL here if it's different
+        ];
+        
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true,
+}));
 app.use("/api/auth",authRoutes);
 app.use("/api/hotels",hotelRoutes);
 app.use("/api/bookings",bookingRoutes);
