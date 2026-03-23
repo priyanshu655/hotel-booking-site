@@ -6,8 +6,7 @@ import {
 } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
-const API = "https://hotel-booking-site-gle5.onrender.com/api";
+import { API } from "../config";
 
 /* ── moods ── */
 const moods = [

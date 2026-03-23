@@ -7,8 +7,7 @@ import {
 } from "react-icons/fi";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
-
-const API = "https://hotel-booking-site-gle5.onrender.com/api";
+import { API } from "../config";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },

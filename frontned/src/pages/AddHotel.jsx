@@ -8,8 +8,7 @@ import {
 } from "react-icons/fi";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
-
-const API = "https://hotel-booking-site-gle5.onrender.com/api";
+import { API } from "../config";
 
 const categoryOptions = ["luxury", "budget", "boutique", "resort", "business"];
 const amenityOptions = [

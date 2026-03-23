@@ -10,6 +10,7 @@ import {
   DollarSign, Users, BedDouble, TrendingUp, Sparkles,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { API } from "../config";
 import "./SellerDashboard.css";
 
 /* ── palette (mirrors CSS vars) ── */
@@ -55,7 +56,7 @@ const SellerDashboard = () => {
           return;
         }
         const res = await axios.get(
-          "https://hotel-booking-site-gle5.onrender.com/api/hotels/analytics/dashboard",
+          `${API}/hotels/analytics/dashboard`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setAnalyticsData(res.data);

@@ -7,8 +7,9 @@ import {
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { API } from "../config";
 
-const API_BASE = "https://hotel-booking-site-gle5.onrender.com/api/auth";
+const API_BASE = `${API}/auth`;
 
 /* ─────────────────────────────────────────────
    PLANE INTRO COMPONENT
