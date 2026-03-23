@@ -203,16 +203,13 @@ export default function HomePage() {
         }
         .nav.transparent { background: transparent; }
 
-        .brand {
-          display: flex; align-items: center; gap: 10px;
-        }
+        .brand { display: flex; align-items: center; gap: 10px; }
         .brand-mark {
           width: 38px; height: 38px; border-radius: 12px;
           background: var(--coral); color: white;
           display: flex; align-items: center; justify-content: center;
           font-family: var(--font-display); font-size: 20px; font-weight: 800;
-          box-shadow: 0 4px 14px rgba(255,56,92,.4);
-          flex-shrink: 0;
+          box-shadow: 0 4px 14px rgba(255,56,92,.4); flex-shrink: 0;
         }
         .brand-name {
           font-family: var(--font-display); font-size: 22px; font-weight: 700;
@@ -221,9 +218,7 @@ export default function HomePage() {
         .nav.transparent .brand-name { color: white; }
         .nav.transparent .brand-mark { box-shadow: 0 4px 14px rgba(0,0,0,.3); }
 
-        .nav-links {
-          display: flex; align-items: center; gap: 4px;
-        }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
         .nav-link {
           display: flex; align-items: center; gap: 6px;
           padding: 9px 16px; border-radius: 100px;
@@ -271,10 +266,7 @@ export default function HomePage() {
           display: flex; flex-direction: column; align-items: center; justify-content: center;
           overflow: hidden;
         }
-
-        .hero-bg {
-          position: absolute; inset: 0; z-index: 0;
-        }
+        .hero-bg { position: absolute; inset: 0; z-index: 0; }
         .hero-bg-img {
           position: absolute; inset: 0;
           background-size: cover; background-position: center;
@@ -284,28 +276,18 @@ export default function HomePage() {
         .hero-bg-img.inactive { opacity: 0; }
         .hero-overlay {
           position: absolute; inset: 0;
-          background: linear-gradient(
-            to bottom,
-            rgba(5,10,20,.28) 0%,
-            rgba(5,10,20,.46) 40%,
-            rgba(5,10,20,.72) 100%
-          );
+          background: linear-gradient(to bottom, rgba(5,10,20,.28) 0%, rgba(5,10,20,.46) 40%, rgba(5,10,20,.72) 100%);
         }
-
-        /* floating grain */
         .hero-grain {
           position: absolute; inset: 0; z-index: 1; pointer-events: none;
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
           opacity: .45;
         }
-
         .hero-content {
           position: relative; z-index: 2;
           display: flex; flex-direction: column; align-items: center; gap: 0;
           width: 100%; padding: 0 24px; text-align: center;
         }
-
-        /* destination badges floating */
         .hero-dest-strip {
           display: flex; gap: 10px; margin-bottom: 36px; flex-wrap: wrap; justify-content: center;
         }
@@ -319,12 +301,11 @@ export default function HomePage() {
         .dest-chip:hover { background: rgba(255,255,255,.22); transform: translateY(-2px); }
         .dest-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: #34D399; }
 
-        /* SEARCH SHELL */
         .search-shell {
           background: var(--surface); border-radius: 20px;
           box-shadow: 0 24px 60px rgba(0,0,0,.22), 0 4px 16px rgba(0,0,0,.1);
-          display: flex; align-items: stretch;
-          overflow: hidden; width: 100%; max-width: 760px;
+          display: flex; align-items: stretch; overflow: hidden;
+          width: 100%; max-width: 760px;
           border: 1.5px solid rgba(255,255,255,.8);
           transition: box-shadow .3s, transform .3s;
         }
@@ -333,26 +314,20 @@ export default function HomePage() {
           transform: translateY(-3px);
         }
         .search-shell form { display: flex; width: 100%; }
-
         .seg {
           flex: 1; padding: 20px 22px 18px;
           border-right: 1px solid rgba(0,0,0,.07);
           display: flex; flex-direction: column; gap: 4px;
-          transition: background .15s; cursor: text;
-          min-width: 0;
+          transition: background .15s; cursor: text; min-width: 0;
         }
         .seg:last-of-type { border-right: none; }
         .seg:hover { background: rgba(0,0,0,.02); }
-        .seg-label {
-          font-size: 10.5px; font-weight: 800; color: var(--slate);
-          letter-spacing: .5px; text-transform: uppercase;
-        }
+        .seg-label { font-size: 10.5px; font-weight: 800; color: var(--slate); letter-spacing: .5px; text-transform: uppercase; }
         .seg-input {
           border: none; outline: none; background: none; font-family: var(--font);
           font-size: 14px; font-weight: 500; color: var(--slate); width: 100%;
         }
         .seg-input::placeholder { color: var(--muted); font-weight: 400; }
-
         .search-btn {
           margin: 10px; padding: 0 24px; flex-shrink: 0;
           background: linear-gradient(135deg, #FF385C 0%, #D70466 100%);
@@ -363,17 +338,14 @@ export default function HomePage() {
           transition: transform .2s, filter .2s, box-shadow .2s;
         }
         .search-btn:hover {
-          transform: scale(1.04);
-          filter: brightness(1.06);
+          transform: scale(1.04); filter: brightness(1.06);
           box-shadow: 0 8px 24px rgba(255,56,92,.55);
         }
-
-        /* scroll cue */
         .hero-scroll-cue {
           position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
           z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px;
-          color: rgba(255,255,255,.6); font-size: 11px; font-weight: 600; letter-spacing: .6px;
-          text-transform: uppercase;
+          color: rgba(255,255,255,.6); font-size: 11px; font-weight: 600;
+          letter-spacing: .6px; text-transform: uppercase;
         }
         .scroll-line {
           width: 1px; height: 40px;
@@ -388,20 +360,15 @@ export default function HomePage() {
 
         /* ════ MOOD BAR ════ */
         .mood-bar {
-          background: var(--surface);
-          border-bottom: 1px solid var(--border);
+          background: var(--surface); border-bottom: 1px solid var(--border);
           position: sticky; top: 72px; z-index: 300;
         }
         .mood-inner {
-          max-width: 1340px; margin: 0 auto;
-          padding: 0 32px;
+          max-width: 1340px; margin: 0 auto; padding: 0 32px;
           display: flex; align-items: center; gap: 0;
         }
-        .mood-scroll {
-          display: flex; flex: 1; overflow-x: auto; scrollbar-width: none; gap: 0;
-        }
+        .mood-scroll { display: flex; flex: 1; overflow-x: auto; scrollbar-width: none; gap: 0; }
         .mood-scroll::-webkit-scrollbar { display: none; }
-
         .mood-tab {
           display: flex; flex-direction: column; align-items: center; gap: 6px;
           padding: 16px 28px 14px; border: none; background: none;
@@ -445,68 +412,87 @@ export default function HomePage() {
         .sort-tick-icon { width: 11px; height: 11px; stroke: white; stroke-width: 2.5; fill: none; }
 
         /* ════ GRID SECTION ════ */
-        .section {
-          max-width: 1340px; margin: 0 auto; padding: 52px 32px 80px;
-        }
+        .section { max-width: 1340px; margin: 0 auto; padding: 52px 32px 80px; }
         .section-top {
           display: flex; align-items: flex-end; justify-content: space-between;
-          margin-bottom: 32px; gap: 16px;
+          margin-bottom: 36px; gap: 16px;
         }
         .section-heading {
           font-family: var(--font-display); font-size: clamp(26px, 3.5vw, 38px);
           font-weight: 700; letter-spacing: -0.5px; color: var(--slate); line-height: 1.15;
         }
         .section-heading em { font-style: italic; color: var(--coral); }
-        .section-count {
-          font-size: 13px; color: var(--muted); font-weight: 500; white-space: nowrap;
-        }
+        .section-count { font-size: 13px; color: var(--muted); font-weight: 500; white-space: nowrap; }
 
-        /* MASONRY-ISH GRID */
+        /* ════ REDESIGNED CARD GRID ════ */
         .hotel-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 28px;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 24px;
+          align-items: start;
         }
 
-        /* featured first card spans 2 cols 2 rows */
+        /* Featured first card — wider, taller */
         .hotel-grid .hcard:first-child {
           grid-column: span 2;
           grid-row: span 2;
         }
-        .hotel-grid .hcard:first-child .hcard-img { aspect-ratio: unset; height: 100%; min-height: 460px; }
-        .hotel-grid .hcard:first-child .hcard-name { font-size: 20px; }
-        .hotel-grid .hcard:first-child .hcard-price b { font-size: 18px; }
+        .hotel-grid .hcard:first-child .hcard-img {
+          aspect-ratio: unset;
+          height: 100%;
+          min-height: 480px;
+          border-radius: 22px;
+        }
+        .hotel-grid .hcard:first-child .hcard-name { font-size: 17px; }
+        .hotel-grid .hcard:first-child .hcard-price b { font-size: 17px; }
+        .hotel-grid .hcard:first-child .hcard-body { padding: 16px 4px 4px; }
 
         /* ── CARD ── */
-        .hcard { position: relative; }
-        .hcard-inner { display: block; text-decoration: none; color: inherit; }
+        .hcard {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+        }
+        .hcard-inner {
+          display: flex;
+          flex-direction: column;
+          text-decoration: none;
+          color: inherit;
+          height: 100%;
+        }
 
+        /* Image container */
         .hcard-img {
-          position: relative; aspect-ratio: 4/3;
-          border-radius: 18px; overflow: hidden; background: #E5E7EB;
-          margin-bottom: 14px;
+          position: relative;
+          aspect-ratio: 3/2;
+          border-radius: 16px;
+          overflow: hidden;
+          background: #E5E7EB;
+          flex-shrink: 0;
         }
         .hcard-img img {
           width: 100%; height: 100%; object-fit: cover; display: block;
-          transition: transform .6s cubic-bezier(.25,.46,.45,.94);
+          transition: transform .65s cubic-bezier(.25,.46,.45,.94);
         }
-        .hcard:hover .hcard-img img { transform: scale(1.07); }
+        .hcard:hover .hcard-img img { transform: scale(1.06); }
 
-        /* overlay that appears on hover */
+        /* Gradient overlay on hover */
         .hcard-overlay {
-          position: absolute; inset: 0; border-radius: 18px;
-          background: linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 55%);
+          position: absolute; inset: 0; border-radius: 16px;
+          background: linear-gradient(to top, rgba(0,0,0,.65) 0%, rgba(0,0,0,.15) 45%, transparent 70%);
           opacity: 0; transition: opacity .3s;
         }
         .hcard:hover .hcard-overlay { opacity: 1; }
 
+        /* Quick view button */
         .hcard-quick {
-          position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%) translateY(8px);
+          position: absolute; bottom: 14px; left: 50%;
+          transform: translateX(-50%) translateY(10px);
           display: flex; align-items: center; gap: 6px; white-space: nowrap;
           background: white; color: var(--slate); border-radius: 100px;
-          padding: 10px 20px; font-size: 13px; font-weight: 700;
-          box-shadow: 0 4px 16px rgba(0,0,0,.2);
-          opacity: 0; transition: opacity .28s, transform .28s;
+          padding: 9px 18px; font-size: 12.5px; font-weight: 700;
+          box-shadow: 0 6px 20px rgba(0,0,0,.18);
+          opacity: 0; transition: opacity .25s, transform .25s;
           pointer-events: none;
         }
         .hcard:hover .hcard-quick {
@@ -514,61 +500,97 @@ export default function HomePage() {
           pointer-events: auto;
         }
 
+        /* Category badge */
         .badge-cat {
-          position: absolute; top: 14px; left: 14px; z-index: 2;
-          background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
-          color: var(--slate); font-size: 10.5px; font-weight: 800;
-          padding: 4px 10px; border-radius: 100px; text-transform: uppercase;
-          letter-spacing: .4px;
+          position: absolute; top: 12px; left: 12px; z-index: 2;
+          background: rgba(255,255,255,.93); backdrop-filter: blur(10px);
+          color: var(--slate); font-size: 10px; font-weight: 800;
+          padding: 4px 10px; border-radius: 100px;
+          text-transform: uppercase; letter-spacing: .5px;
         }
+
+        /* Favorite button */
         .badge-fav {
-          position: absolute; top: 14px; right: 14px; z-index: 3;
-          width: 36px; height: 36px; border-radius: 50%;
-          background: rgba(255,255,255,.82); backdrop-filter: blur(8px);
+          position: absolute; top: 12px; right: 12px; z-index: 3;
+          width: 34px; height: 34px; border-radius: 50%;
+          background: rgba(255,255,255,.85); backdrop-filter: blur(10px);
           border: none; cursor: pointer; padding: 0;
           display: flex; align-items: center; justify-content: center;
-          color: rgba(0,0,0,.4); transition: transform .2s, background .2s, color .2s;
+          color: rgba(0,0,0,.35); transition: transform .2s, background .2s, color .2s;
+          box-shadow: 0 2px 8px rgba(0,0,0,.1);
         }
-        .badge-fav:hover  { transform: scale(1.15); background: white; }
+        .badge-fav:hover { transform: scale(1.12); background: white; color: var(--coral); }
         .badge-fav.active { color: var(--coral); background: white; }
         .badge-fav.active svg { fill: var(--coral); }
 
-        .hcard-body {}
-        .hcard-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
-        .hcard-name { font-size: 14.5px; font-weight: 700; color: var(--slate); letter-spacing: -0.1px; line-height: 1.35; }
+        /* Card body — clean info layout */
+        .hcard-body {
+          padding: 14px 2px 2px;
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+          flex: 1;
+        }
+
+        /* Top row: name + rating */
+        .hcard-row {
+          display: flex; align-items: flex-start;
+          justify-content: space-between; gap: 8px;
+          margin-bottom: 5px;
+        }
+        .hcard-name {
+          font-size: 14px; font-weight: 700; color: var(--slate);
+          letter-spacing: -0.1px; line-height: 1.4;
+          flex: 1; min-width: 0;
+        }
+
+        /* Rating pill */
         .hcard-rating {
-          display: flex; align-items: center; gap: 3px; flex-shrink: 0;
-          font-size: 13px; font-weight: 700; color: var(--slate);
+          display: flex; align-items: center; gap: 4px;
+          background: #FFF7ED; border: 1px solid #FED7AA;
+          border-radius: 8px; padding: 3px 8px;
+          font-size: 12px; font-weight: 700; color: #92400E;
+          flex-shrink: 0;
         }
+
+        /* Location */
         .hcard-loc {
-          display: flex; align-items: center; gap: 3px;
-          font-size: 13px; color: var(--muted); margin-bottom: 10px;
+          display: flex; align-items: center; gap: 4px;
+          font-size: 12.5px; color: var(--muted); font-weight: 500;
+          margin-bottom: 12px;
         }
+
+        /* Footer: price + availability */
         .hcard-foot {
           display: flex; align-items: center; justify-content: space-between;
-          padding-top: 10px; border-top: 1px solid rgba(0,0,0,.06);
+          padding-top: 10px;
+          border-top: 1px solid rgba(0,0,0,.06);
+          margin-top: auto;
+          gap: 8px;
         }
-        .hcard-price { font-size: 14px; color: var(--slate); }
-        .hcard-price b { font-weight: 800; font-size: 15px; }
-        .hcard-price span { color: var(--muted); font-size: 13px; }
+        .hcard-price { font-size: 13.5px; color: var(--slate); line-height: 1; }
+        .hcard-price b { font-weight: 800; font-size: 15px; color: var(--slate); }
+        .hcard-price span { color: var(--muted); font-size: 12px; font-weight: 400; }
 
+        /* Availability pills */
         .avail-pill {
-          font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px;
+          font-size: 11px; font-weight: 700;
+          padding: 4px 10px; border-radius: 100px;
+          white-space: nowrap; flex-shrink: 0;
         }
-        .avail-ok   { background: #DCFCE7; color: #166534; }
-        .avail-low  { background: #FEF9C3; color: #854D0E; }
-        .avail-sold { background: #FEE2E2; color: #991B1B; }
+        .avail-ok   { background: #DCFCE7; color: #15803D; }
+        .avail-low  { background: #FEF9C3; color: #A16207; }
+        .avail-sold { background: #FEE2E2; color: #B91C1C; }
 
         /* ── SKELETON ── */
-        .sk { border-radius: 18px; overflow: hidden; }
+        .sk { border-radius: 16px; overflow: hidden; }
         .sk-box {
-          border-radius: 18px; margin-bottom: 14px;
-          aspect-ratio: 4/3;
+          border-radius: 16px; margin-bottom: 14px; aspect-ratio: 3/2;
           background: linear-gradient(90deg, #F3F4F6 25%, #E9EAEC 50%, #F3F4F6 75%);
           background-size: 200%; animation: shimmer 1.6s infinite;
         }
         .sk-line {
-          height: 13px; border-radius: 6px; margin-bottom: 9px;
+          height: 12px; border-radius: 6px; margin-bottom: 9px;
           background: linear-gradient(90deg, #F3F4F6 25%, #E9EAEC 50%, #F3F4F6 75%);
           background-size: 200%; animation: shimmer 1.6s infinite;
         }
@@ -582,31 +604,28 @@ export default function HomePage() {
         .empty-icon {
           width: 72px; height: 72px; border-radius: 22px;
           background: var(--bg); border: 1.5px solid var(--border);
-          display: flex; align-items: center; justify-content: center;
-          font-size: 32px;
+          display: flex; align-items: center; justify-content: center; font-size: 32px;
         }
         .empty h3 { font-size: 20px; font-weight: 700; color: var(--slate); }
         .empty p  { font-size: 14px; color: var(--muted); }
 
         /* ════ RESPONSIVE ════ */
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
           .hotel-grid { grid-template-columns: repeat(3, 1fr); }
           .hotel-grid .hcard:first-child { grid-column: span 2; }
         }
-        @media (max-width: 820px) {
-          .nav { padding: 0 20px; }
-          .hotel-grid { grid-template-columns: repeat(2, 1fr); }
+        @media (max-width: 900px) {
+          .hotel-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
           .hotel-grid .hcard:first-child { grid-column: span 2; }
-          .hotel-grid .hcard:first-child .hcard-img { min-height: 320px; }
+          .hotel-grid .hcard:first-child .hcard-img { min-height: 300px; }
+          .nav { padding: 0 20px; }
           .section { padding: 36px 20px 64px; }
           .mood-inner { padding: 0 16px; }
-          .search-shell { max-width: 95vw; }
-          .seg { padding: 16px 16px 14px; }
         }
         @media (max-width: 580px) {
-          .hotel-grid { grid-template-columns: 1fr; }
+          .hotel-grid { grid-template-columns: 1fr; gap: 18px; }
           .hotel-grid .hcard:first-child { grid-column: 1; grid-row: 1; }
-          .hotel-grid .hcard:first-child .hcard-img { height: auto; min-height: unset; aspect-ratio: 4/3; }
+          .hotel-grid .hcard:first-child .hcard-img { height: auto; min-height: unset; aspect-ratio: 3/2; }
           .hero-dest-strip { display: none; }
           .search-shell form { flex-direction: column; }
           .seg { border-right: none; border-bottom: 1px solid rgba(0,0,0,.07); }
@@ -663,7 +682,6 @@ export default function HomePage() {
 
         {/* ════ HERO ════ */}
         <div className="hero">
-          {/* bg slideshow */}
           <div className="hero-bg">
             {bgImages.map((img, i) => (
               <div
@@ -682,7 +700,6 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: .7, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            {/* live destination chips */}
             <motion.div
               className="hero-dest-strip"
               initial={{ opacity: 0, y: 14 }}
@@ -701,7 +718,6 @@ export default function HomePage() {
               ))}
             </motion.div>
 
-            {/* Search */}
             <motion.div
               className={`search-shell ${searchFocused ? "focused" : ""}`}
               initial={{ opacity: 0, y: 20, scale: .97 }}
@@ -709,54 +725,25 @@ export default function HomePage() {
               transition={{ delay: .3, duration: .55 }}
             >
               <form onSubmit={handleSearch}>
-                <div
-                  className="seg"
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setSearchFocused(false)}
-                >
+                <div className="seg" onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}>
                   <label className="seg-label">Where to?</label>
-                  <input
-                    className="seg-input"
-                    placeholder="Search destinations"
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                  />
+                  <input className="seg-input" placeholder="Search destinations" value={search} onChange={e => setSearch(e.target.value)} />
                 </div>
-                <div
-                  className="seg"
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setSearchFocused(false)}
-                >
+                <div className="seg" onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}>
                   <label className="seg-label">Check-in</label>
-                  <input
-                    type="date"
-                    className="seg-input"
-                    value={checkIn}
-                    onChange={e => setCheckIn(e.target.value)}
-                  />
+                  <input type="date" className="seg-input" value={checkIn} onChange={e => setCheckIn(e.target.value)} />
                 </div>
-                <div
-                  className="seg"
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setSearchFocused(false)}
-                >
+                <div className="seg" onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}>
                   <label className="seg-label">Check-out</label>
-                  <input
-                    type="date"
-                    className="seg-input"
-                    value={checkOut}
-                    onChange={e => setCheckOut(e.target.value)}
-                  />
+                  <input type="date" className="seg-input" value={checkOut} onChange={e => setCheckOut(e.target.value)} />
                 </div>
                 <button type="submit" className="search-btn">
-                  <FiSearch size={16} />
-                  Search
+                  <FiSearch size={16} /> Search
                 </button>
               </form>
             </motion.div>
           </motion.div>
 
-          {/* scroll cue */}
           <div className="hero-scroll-cue">
             <div className="scroll-line" />
             Scroll
@@ -783,10 +770,7 @@ export default function HomePage() {
               <button className="sort-btn" onClick={() => setShowSort(s => !s)}>
                 <FiSliders size={14} />
                 Sort
-                <FiChevronDown
-                  size={12}
-                  style={{ transition: "transform .2s", transform: showSort ? "rotate(180deg)" : "none" }}
-                />
+                <FiChevronDown size={12} style={{ transition: "transform .2s", transform: showSort ? "rotate(180deg)" : "none" }} />
               </button>
               <AnimatePresence>
                 {showSort && (
@@ -866,14 +850,15 @@ export default function HomePage() {
                           <div className="hcard-overlay" />
                           <span className="badge-cat">{hotel.category}</span>
                           <div className="hcard-quick">
-                            View details <FiArrowRight size={13} />
+                            View details <FiArrowRight size={12} />
                           </div>
                         </div>
+
                         <div className="hcard-body">
                           <div className="hcard-row">
                             <h3 className="hcard-name">{hotel.name}</h3>
                             <div className="hcard-rating">
-                              <FiStar size={12} fill="currentColor" color="#FF385C" />
+                              <FiStar size={11} fill="currentColor" />
                               {hotel.rating?.toFixed(1) || "New"}
                             </div>
                           </div>
@@ -897,13 +882,12 @@ export default function HomePage() {
                       </Link>
                     </TiltCard>
 
-                    {/* fav button outside TiltCard so it doesn't tilt */}
                     <button
                       className={`badge-fav ${isFav ? "active" : ""}`}
                       onClick={e => { e.preventDefault(); toggleFav(hotel._id); }}
                       aria-label="Save"
                     >
-                      <FiHeart size={15} />
+                      <FiHeart size={14} />
                     </button>
                   </motion.div>
                 );
