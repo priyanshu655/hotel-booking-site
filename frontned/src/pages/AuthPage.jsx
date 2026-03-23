@@ -442,7 +442,7 @@ function AuthPage() {
                         type={showPassword ? "text" : "password"}
                         placeholder={isLogin ? "Your password" : "Min. 8 characters"}
                         value={form.password} onChange={handleChange} required
-                        
+                        autoComplete={isLogin ? "current-password" : "new-password"}
                         style={{ paddingRight: 40 }} />
                       <button type="button" className="field-eye" onClick={() => setShowPassword(v => !v)}>
                         {showPassword ? <FiEyeOff size={14} /> : <FiEye size={14} />}

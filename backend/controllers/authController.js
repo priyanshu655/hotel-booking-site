@@ -43,24 +43,33 @@ exports.login=async (req,res)=>{
     try{
         let {email,password}=req.body;
         if(!email || !password){
-            return res.status(400).json({message:"enter the credemtials"});
+            return res.status(400).json({message:"Please enter email and password"});
         }
 
         const isuser=await User.findOne({email});
         if(!isuser){
-            return res.status(400).json({message:"user not found!"});
+            return res.status(401).json({message:"Invalid email or password"});
         }
-const isMatch = await bcrypt.compare(password, isuser.password);
 
-if (!isMatch) {
-    return res.status(400).json({ message: "enter correct password" });
-}
+        const isMatch = await bcrypt.compare(password, isuser.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
 
-        const token=jwt.sign({id:isuser._id, role:isuser.role},process.env.JWT_SECRET,{ expiresIn: '1h' });
-        res.json({ message: 'Login successful', token: token, user: { id: isuser._id, username: isuser.username, email: isuser.email, role: isuser.role } });
+        const token=jwt.sign({id:isuser._id, role:isuser.role}, process.env.JWT_SECRET, { expiresIn: '7d' });
+        res.status(200).json({ 
+            message: 'Login successful', 
+            token: token, 
+            user: { 
+                id: isuser._id, 
+                username: isuser.username, 
+                email: isuser.email, 
+                role: isuser.role 
+            } 
+        });
     }catch(err){
-        console.log(err);
-    return res.status(500).json({ message: "Login error", error: err.message });
+        console.error('Login error:', err.message);
+        return res.status(500).json({ message: "Server error during login", error: err.message });
     }
 }
 
