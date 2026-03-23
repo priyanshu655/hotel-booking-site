@@ -12,27 +12,30 @@ const cors=require('cors');
 
 connectDb();
 app.use(express.json());
+
+// CORS configuration
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://planora-pi-eosin.vercel.app'
+];
+
 app.use(cors({
-    origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-        
-        const allowedOrigins = [
-            'http://localhost:5173', 
-            'http://localhost:3000',
-            'https://planora-pi-eosin.vercel.app'
-        ];
-        
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-            return callback(new Error(msg), false);
+    origin: function(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
         }
-        return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// Explicit OPTIONS handling for all routes
+app.options('*', cors());
+
 app.use("/api/auth",authRoutes);
 app.use("/api/hotels",hotelRoutes);
 app.use("/api/bookings",bookingRoutes);
