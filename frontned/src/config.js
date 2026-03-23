@@ -1,4 +1,7 @@
-// Get API URL from environment or default to localhost
-const API = process.env.REACT_APP_API_URL || process.env.VITE_API_URL || "http://localhost:8080/api";
+const API = import.meta.env.VITE_API_URL;
+
+if (!API) {
+  console.error("❌ API URL not found. Check environment variables.");
+}
 
 export { API };
