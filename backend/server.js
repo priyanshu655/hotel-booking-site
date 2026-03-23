@@ -33,9 +33,6 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Explicit OPTIONS handling for all routes
-app.options('*', cors());
-
 app.use("/api/auth",authRoutes);
 app.use("/api/hotels",hotelRoutes);
 app.use("/api/bookings",bookingRoutes);
