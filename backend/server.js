@@ -17,7 +17,8 @@ app.use(express.json());
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
-    'https://planora-pi-eosin.vercel.app'
+    'https://planora-pi-eosin.vercel.app',
+    'https://planora-o2fksilvv-priyanshu655s-projects.vercel.app' // ✅ ADD THIS
 ];
 
 app.use(cors({
