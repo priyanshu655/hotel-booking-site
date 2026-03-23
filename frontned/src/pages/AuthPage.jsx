@@ -431,7 +431,7 @@ function AuthPage() {
                     <div className="field-wrap">
                       <span className="field-icon"><FiMail size={13} /></span>
                       <input className="field-input" type="email" name="email"
-                        placeholder="you@example.com" value={form.email} onChange={handleChange} required />
+                        placeholder="you@example.com" value={form.email} onChange={handleChange} required autoComplete="email" />
                     </div>
                   </div>
                   <div>

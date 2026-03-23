@@ -42,8 +42,15 @@ exports.signup=async (req,res)=>{
 exports.login=async (req,res)=>{
     try{
         let {email,password}=req.body;
+        
         if(!email || !password){
-            return res.status(400).json({message:"Please enter email and password"});
+            return res.status(400).json({message:"Please provide email and password"});
+        }
+
+        // Make sure JWT_SECRET is set
+        if(!process.env.JWT_SECRET){
+            console.error("JWT_SECRET is not defined in environment variables");
+            return res.status(500).json({message:"Server configuration error"});
         }
 
         const isuser=await User.findOne({email});
@@ -57,7 +64,7 @@ exports.login=async (req,res)=>{
         }
 
         const token=jwt.sign({id:isuser._id, role:isuser.role}, process.env.JWT_SECRET, { expiresIn: '7d' });
-        res.status(200).json({ 
+        return res.status(200).json({ 
             message: 'Login successful', 
             token: token, 
             user: { 
@@ -68,7 +75,7 @@ exports.login=async (req,res)=>{
             } 
         });
     }catch(err){
-        console.error('Login error:', err.message);
+        console.error('Login error:', err);
         return res.status(500).json({ message: "Server error during login", error: err.message });
     }
 }
