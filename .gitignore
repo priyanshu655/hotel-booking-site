@@ -1,0 +1,117 @@
+# =========================
+
+# Node.js / Backend
+
+# =========================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+
+.env
+.env.*
+!.env.example
+
+# Logs
+
+logs/
+*.log
+
+# Runtime data
+
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory
+
+coverage/
+
+# Build output
+
+dist/
+build/
+
+# Dependency directories
+
+jspm_packages/
+
+# Optional npm cache
+
+.npm
+
+# Optional eslint cache
+
+.eslintcache
+
+# =========================
+
+# React / Frontend
+
+# =========================
+
+node_modules/
+build/
+dist/
+
+# React testing
+
+coverage/
+
+# =========================
+
+# OS Files
+
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+
+# IDE / Editor Files
+
+# =========================
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+
+# Misc
+
+# =========================
+
+*.local
+
+# =========================
+
+# Optional: Database files
+
+# =========================
+
+*.sqlite
+*.db
+
+# =========================
+
+# Optional: PM2
+
+# =========================
+
+.pm2/
+
+# =========================
+
+# Optional: Uploads
+
+# =========================
+
+uploads/

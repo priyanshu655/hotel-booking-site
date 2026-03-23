@@ -1,0 +1,516 @@
+/* ═══════════════════════════════════════════
+   Planora — Auth Page Styles
+   Modern glassmorphism + animated gradients
+   ═══════════════════════════════════════════ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap");
+
+/* ---------- base ---------- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.auth-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: "Inter", system-ui, sans-serif;
+  background: #0a0e1a;
+}
+
+/* ---------- animated bg orbs ---------- */
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.45;
+  pointer-events: none;
+  will-change: transform;
+}
+.orb-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #6366f1, #3b82f6);
+  top: -10%;
+  left: -5%;
+}
+.orb-2 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, #ec4899, #f97316);
+  bottom: -10%;
+  right: -5%;
+}
+.orb-3 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, #14b8a6, #06b6d4);
+  top: 50%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+}
+
+/* ---------- floating travel icons ---------- */
+.floating-icons {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.floating-icon {
+  position: absolute;
+  user-select: none;
+}
+
+/* ---------- auth card ---------- */
+.auth-card {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: min(1060px, 94vw);
+  min-height: 620px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+/* ---------- left brand panel ---------- */
+.auth-brand {
+  position: relative;
+  flex: 1;
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.2),
+    rgba(14, 165, 233, 0.15),
+    rgba(20, 184, 166, 0.12)
+  );
+  overflow: hidden;
+}
+
+.brand-content {
+  position: relative;
+  z-index: 2;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.logo-icon {
+  font-size: 1.5rem;
+  color: #38bdf8;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.5));
+}
+.brand-logo span {
+  font-family: "Playfair Display", serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.brand-tagline {
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #f1f5f9;
+  margin-bottom: 16px;
+}
+.brand-tagline .highlight {
+  background: linear-gradient(135deg, #38bdf8, #6366f1, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.brand-desc {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  margin-bottom: 32px;
+  max-width: 340px;
+}
+
+/* features */
+.brand-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.feature-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 500;
+  backdrop-filter: blur(6px);
+  transition: background 0.3s;
+}
+.feature-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  flex-shrink: 0;
+}
+
+/* decorative circles */
+.brand-circles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.circle-1 {
+  width: 300px;
+  height: 300px;
+  bottom: -60px;
+  right: -80px;
+}
+.circle-2 {
+  width: 200px;
+  height: 200px;
+  bottom: -10px;
+  right: -30px;
+}
+.circle-3 {
+  width: 120px;
+  height: 120px;
+  top: 20px;
+  right: 10px;
+}
+
+/* ---------- right form panel ---------- */
+.auth-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 44px;
+}
+
+.form-inner {
+  width: 100%;
+  max-width: 380px;
+}
+
+.form-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 6px;
+}
+
+.form-subtitle {
+  color: #64748b;
+  font-size: 0.88rem;
+  margin-bottom: 32px;
+}
+
+/* ---------- inputs ---------- */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 16px 14px 46px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f1f5f9;
+  font-size: 0.92rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+}
+.input-group input::placeholder {
+  color: #475569;
+}
+.input-group input:focus {
+  border-color: rgba(99, 102, 241, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  color: #475569;
+  font-size: 1.1rem;
+  pointer-events: none;
+  transition: color 0.3s;
+  z-index: 1;
+}
+.input-group input:focus ~ .input-icon,
+.input-group:focus-within .input-icon {
+  color: #6366f1;
+}
+
+.toggle-pw {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  color: #475569;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  transition: color 0.3s;
+  z-index: 1;
+}
+.toggle-pw:hover {
+  color: #94a3b8;
+}
+
+/* ---------- extras row ---------- */
+.form-extras {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -4px;
+}
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.remember-me input[type="checkbox"] {
+  accent-color: #6366f1;
+  border-radius: 4px;
+}
+.forgot-link {
+  color: #6366f1;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+.forgot-link:hover {
+  color: #818cf8;
+}
+
+/* ---------- submit button ---------- */
+.submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1, #3b82f6, #0ea5e9);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
+  transition: box-shadow 0.3s;
+  margin-top: 4px;
+}
+.submit-btn:hover {
+  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.45);
+}
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-icon {
+  font-size: 1rem;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* spinner */
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- divider ---------- */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  gap: 14px;
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.divider span {
+  color: #475569;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ---------- switch mode ---------- */
+.switch-text {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+.switch-btn {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  margin-left: 6px;
+  font-family: inherit;
+  transition: color 0.3s;
+}
+.switch-btn:hover {
+  color: #818cf8;
+}
+
+/* ---------- Role Toggle ---------- */
+.role-toggle-wrap {
+  overflow: hidden;
+}
+.role-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.role-btn {
+  flex: 1;
+  padding: 0.65rem 0.8rem;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s;
+}
+.role-btn.active {
+  border-color: #818cf8;
+  background: rgba(129, 140, 248, 0.15);
+  color: #fff;
+}
+.role-btn:hover:not(.active) {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ═══════════════════ RESPONSIVE ═══════════════════ */
+
+@media (max-width: 860px) {
+  .auth-card {
+    flex-direction: column;
+    min-height: unset;
+  }
+  .auth-brand {
+    padding: 36px 32px;
+  }
+  .brand-tagline {
+    font-size: 1.8rem;
+  }
+  .brand-features {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .auth-form-panel {
+    padding: 36px 32px;
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-card {
+    border-radius: 20px;
+    width: 96vw;
+  }
+  .auth-brand {
+    padding: 28px 22px;
+  }
+  .brand-tagline {
+    font-size: 1.45rem;
+  }
+  .brand-desc {
+    font-size: 0.85rem;
+  }
+  .auth-form-panel {
+    padding: 28px 22px;
+  }
+  .form-title {
+    font-size: 1.5rem;
+  }
+}

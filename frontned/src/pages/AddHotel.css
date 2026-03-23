@@ -1,0 +1,355 @@
+.add-hotel-wrapper {
+  min-height: 100vh;
+  background: #fafafa;
+  font-family: "Inter", sans-serif;
+}
+
+/* Nav */
+.add-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #555;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.back-btn:hover {
+  color: #e91e63;
+}
+.add-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #e91e63;
+  text-decoration: none;
+}
+.brand-icon {
+  font-size: 1.3rem;
+}
+
+/* Content */
+.add-content {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+.add-header h1 {
+  font-size: 1.8rem;
+  color: #1a1a2e;
+  margin-bottom: 1rem;
+}
+
+/* Tabs */
+.tab-toggles {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid #eee;
+  background: #fff;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #555;
+  transition: all 0.2s;
+}
+.tab-btn.active {
+  border-color: #e91e63;
+  color: #e91e63;
+  background: #fce4ec;
+}
+
+/* Form */
+.hotel-form {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.field.full {
+  grid-column: 1 / -1;
+}
+.field label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+.field input,
+.field select,
+.field textarea {
+  padding: 0.75rem 1rem;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #fafafa;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: #e91e63;
+  background: #fff;
+}
+.field textarea {
+  resize: vertical;
+}
+.checkbox-field label {
+  flex-direction: row;
+  cursor: pointer;
+  gap: 0.5rem;
+}
+.checkbox-field input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #e91e63;
+}
+
+/* Amenities */
+.amenities-section {
+  margin-top: 1.5rem;
+}
+.amenities-section label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.6rem;
+}
+.amenity-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.amenity-pill {
+  padding: 0.5rem 1rem;
+  border: 2px solid #eee;
+  border-radius: 50px;
+  background: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #555;
+}
+.amenity-pill.active {
+  border-color: #e91e63;
+  background: #fce4ec;
+  color: #e91e63;
+  font-weight: 600;
+}
+.amenity-pill:hover {
+  border-color: #f48fb1;
+}
+
+/* Images */
+.images-section {
+  margin-top: 1.5rem;
+}
+.images-section label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.6rem;
+}
+.file-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px dashed #ddd;
+  border-radius: 12px;
+  background: #fafafa;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.image-previews {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.preview-thumb {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #eee;
+}
+
+/* Submit */
+.submit-btn {
+  margin-top: 2rem;
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #e91e63, #f06292);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* My Hotels List */
+.my-hotels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.empty-hotels {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #999;
+}
+.empty-hotels span {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+.my-hotel-card {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+.my-hotel-card:hover {
+  transform: translateY(-2px);
+}
+.my-hotel-card img {
+  width: 100px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.my-hotel-info {
+  flex: 1;
+  min-width: 0;
+}
+.my-hotel-info h3 {
+  font-size: 1.05rem;
+  color: #1a1a2e;
+  margin-bottom: 0.2rem;
+}
+.my-hotel-loc {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.82rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+.my-hotel-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.stat {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.6rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  color: #555;
+  font-weight: 500;
+}
+.room-stat {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+.status-stat.open {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.status-stat.full {
+  background: #ffebee;
+  color: #c62828;
+}
+.delete-btn {
+  background: none;
+  border: 2px solid #ffcdd2;
+  color: #e53935;
+  padding: 0.6rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.delete-btn:hover {
+  background: #ffebee;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .my-hotel-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .my-hotel-card img {
+    width: 100%;
+    height: 160px;
+  }
+}
