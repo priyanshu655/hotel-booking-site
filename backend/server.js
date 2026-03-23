@@ -19,6 +19,5 @@ app.use("/api/bookings",bookingRoutes);
 app.use("/api/trips",tripRoutes);
 
 
-app.listen(8080,()=>{
-    console.log("running on port 8080");
-});
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log("Server running"));
