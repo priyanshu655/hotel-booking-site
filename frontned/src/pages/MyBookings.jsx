@@ -8,7 +8,7 @@ import {
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 
-const API = "http://localhost:8080/api";
+const API = "https://hotel-booking-site-gle5.onrender.com/api";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },

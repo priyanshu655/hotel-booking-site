@@ -55,7 +55,7 @@ const SellerDashboard = () => {
           return;
         }
         const res = await axios.get(
-          "http://localhost:8080/api/hotels/analytics/dashboard",
+          "https://hotel-booking-site-gle5.onrender.com/api/hotels/analytics/dashboard",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setAnalyticsData(res.data);

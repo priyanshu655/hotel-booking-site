@@ -7,7 +7,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API = "http://localhost:8080/api";
+const API = "https://hotel-booking-site-gle5.onrender.com/api";
 
 /* ── moods ── */
 const moods = [

@@ -13,7 +13,7 @@ import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 
-const API = "http://localhost:8080/api";
+const API = "https://hotel-booking-site-gle5.onrender.com/api";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
