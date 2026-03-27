@@ -675,7 +675,7 @@ export default function HotelDetail() {
             >
               <div className="booking-card">
                 <div className="bc-price-row">
-                  <span className="bc-price">₹{hotel.pricePerNight?.toLocaleString()}</span>
+                  <span className="bc-price">₹{hotel.pricePerNight?.toLocaleString("en-IN")}</span>
                   <span className="bc-per">/ night</span>
                 </div>
 

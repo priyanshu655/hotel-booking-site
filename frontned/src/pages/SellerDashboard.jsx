@@ -109,7 +109,7 @@ const SellerDashboard = () => {
       cls: "revenue-card",
       icon: <DollarSign size={22} />,
       label: "Total Revenue",
-      value: `$${analyticsData.totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+      value: `₹${analyticsData.totalRevenue.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`,
     },
     {
       cls: "bookings-card",
@@ -358,7 +358,7 @@ const SellerDashboard = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
                       <XAxis dataKey="season" tick={axisStyle} />
                       <YAxis tick={axisStyle} />
-                      <Tooltip content={<CustomTooltip prefix="$" />} />
+                      <Tooltip content={<CustomTooltip prefix="₹" />} />
                       <Bar dataKey="revenue" fill="#F59E0B" radius={[8, 8, 0, 0]} name="Revenue" />
                     </BarChart>
                   </ResponsiveContainer>
@@ -391,7 +391,7 @@ const SellerDashboard = () => {
                         <div className="hotel-details">
                           {[
                             ["Location",       hotel.location],
-                            ["Price / night",  `$${hotel.pricePerNight}`],
+                            ["Price / night",  `₹${hotel.pricePerNight}`],
                             ["Total Rooms",    hotel.rooms],
                             ["Bookings",       occ.totalBookings],
                           ].map(([label, val]) => (
