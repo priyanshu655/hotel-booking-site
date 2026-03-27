@@ -99,7 +99,6 @@ const TouchBall = ({ token, user, onLogout }) => {
     if (!dragging.current) {
       setOpen(o => !o);
     } else {
-      // snap to nearest vertical edge
       setPos(p => ({
         x: p.x + 28 < window.innerWidth / 2 ? 8 : window.innerWidth - 60,
         y: p.y,
@@ -107,7 +106,6 @@ const TouchBall = ({ token, user, onLogout }) => {
     }
   };
 
-  // close on outside tap
   useEffect(() => {
     if (!open) return;
     const fn = (e) => {
@@ -144,7 +142,6 @@ const TouchBall = ({ token, user, onLogout }) => {
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      {/* ── popup menu ── */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -164,7 +161,6 @@ const TouchBall = ({ token, user, onLogout }) => {
               boxShadow: "0 24px 64px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,0.07)",
             }}
           >
-            {/* brand row */}
             <div style={{
               display: "flex", alignItems: "center", gap: 9,
               padding: "8px 12px 12px",
@@ -184,7 +180,6 @@ const TouchBall = ({ token, user, onLogout }) => {
               )}
             </div>
 
-            {/* items */}
             {menuItems.map((item, i) => (
               <motion.div key={i}
                 initial={{ opacity: 0, x: snapLeft ? -12 : 12 }}
@@ -220,7 +215,6 @@ const TouchBall = ({ token, user, onLogout }) => {
         )}
       </AnimatePresence>
 
-      {/* ── the ball ── */}
       <motion.div
         animate={{ scale: open ? 0.9 : 1 }}
         style={{
@@ -269,6 +263,7 @@ export default function HomePage() {
   const [favorites, setFavorites]       = useState(() => {
     try { return JSON.parse(localStorage.getItem("planora_favs")) || []; } catch { return []; }
   });
+  const [filteredHotels, setFilteredHotels] = useState([]);
 
   const sortRef  = useRef(null);
   const navigate = useNavigate();
@@ -288,7 +283,7 @@ export default function HomePage() {
     return () => clearInterval(t);
   }, []);
 
-  useEffect(() => { fetchHotels(); }, [activeCategory, sort]);
+  useEffect(() => { fetchHotels(); }, [activeCategory]);
 
   useEffect(() => {
     if (token && !user) {
@@ -310,28 +305,71 @@ export default function HomePage() {
     return () => document.removeEventListener("mousedown", fn);
   }, []);
 
+  /* ── filter + sort runs whenever hotels list, search query, or sort changes ── */
+  useEffect(() => {
+    let results = [...hotels];
+
+    // client-side search filter
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      results = results.filter(h =>
+        h.name?.toLowerCase().includes(q) ||
+        h.city?.toLowerCase().includes(q) ||
+        h.location?.toLowerCase().includes(q)
+      );
+    }
+
+    // client-side sort
+    switch (sort) {
+      case "price_asc":
+        results.sort((a, b) => (a.pricePerNight ?? a.price ?? 0) - (b.pricePerNight ?? b.price ?? 0));
+        break;
+      case "price_desc":
+        results.sort((a, b) => (b.pricePerNight ?? b.price ?? 0) - (a.pricePerNight ?? a.price ?? 0));
+        break;
+      case "rating":
+        results.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+        break;
+      case "newest":
+      default:
+        results.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+    }
+
+    setFilteredHotels(results);
+  }, [search, sort, hotels]);
+
   const fetchHotels = async () => {
     setLoading(true);
     try {
       const params = {};
       if (activeCategory !== "all") params.category = activeCategory;
-      if (sort !== "newest") params.sort = sort;
-      if (search.trim()) params.search = search.trim();
       if (checkIn)  params.checkIn  = checkIn;
       if (checkOut) params.checkOut = checkOut;
       const res = await axios.get(`${API}/hotels`, { params });
       setHotels(res.data);
-    } catch { setHotels([]); }
-    finally  { setLoading(false); }
+    } catch {
+      setHotels([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSearch  = e => { e.preventDefault(); fetchHotels(); };
-  const toggleFav     = id => {
+  /* FIX: handleSearch no longer calls undefined setSearchQuery.
+     The form submit just prevents default; live filtering is driven by
+     the useEffect above that watches `search`. */
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // filtering happens reactively via useEffect — nothing extra needed
+  };
+
+  const toggleFav = id => {
     const next = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id];
     setFavorites(next);
     localStorage.setItem("planora_favs", JSON.stringify(next));
   };
-  const handleLogout  = () => {
+
+  const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("planora_user");
     setUser(null);
@@ -481,20 +519,36 @@ export default function HomePage() {
         .dest-chip:hover { background: rgba(255,255,255,.22); transform: translateY(-2px); }
         .dest-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: #34D399; flex-shrink: 0; }
 
-        /* ── SEARCH ── */
+        /* ── SEARCH SHELL ── */
         .search-shell {
           background: var(--surface); border-radius: 20px;
           box-shadow: 0 24px 60px rgba(0,0,0,.22), 0 4px 16px rgba(0,0,0,.1);
-          display: flex; align-items: stretch; overflow: hidden;
-          width: 100%; max-width: 760px;
+          width: 100%; max-width: 780px;
           border: 1.5px solid rgba(255,255,255,.8);
-          transition: box-shadow .3s, transform .3s;
+          transition: box-shadow .3s, transform .3s; overflow: hidden;
         }
         .search-shell.focused {
           box-shadow: 0 32px 72px rgba(0,0,0,.28), 0 0 0 3px rgba(255,56,92,.2);
           transform: translateY(-3px);
         }
-        .search-shell form { display: flex; width: 100%; }
+        .search-shell form {
+          display: flex; align-items: stretch; width: 100%;
+        }
+        /* FIX: search-bar-field — the main text input segment */
+        .search-bar-field {
+          flex: 2; padding: 18px 20px 16px;
+          border-right: 1px solid rgba(0,0,0,.07);
+          display: flex; align-items: center; gap: 10px;
+          transition: background .15s; cursor: text; min-width: 0;
+        }
+        .search-bar-field:hover { background: rgba(0,0,0,.02); }
+        .search-bar-field input {
+          border: none; outline: none; background: none; flex: 1;
+          font-family: var(--font); font-size: 14px; font-weight: 500; color: var(--slate);
+        }
+        .search-bar-field input::placeholder { color: var(--muted); font-weight: 400; }
+        .search-bar-icon { color: var(--muted); flex-shrink: 0; }
+
         .seg {
           flex: 1; padding: 18px 20px 16px;
           border-right: 1px solid rgba(0,0,0,.07);
@@ -606,9 +660,11 @@ export default function HomePage() {
         .hotel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; align-items: start; }
 
         /* ── CARD ── */
-        .hcard { position: relative; display: flex; flex-direction: column; }
-        .hcard-inner { display: flex; flex-direction: column; text-decoration: none; color: inherit; height: 100%; }
-
+        /* FIX: hcard wraps both the image and the fav button together */
+        .hcard {
+          position: relative; display: flex; flex-direction: column;
+          text-decoration: none; color: inherit;
+        }
         .hcard-img {
           position: relative; aspect-ratio: 3/2;
           border-radius: 16px; overflow: hidden; background: #E5E7EB; flex-shrink: 0;
@@ -641,6 +697,7 @@ export default function HomePage() {
           color: var(--slate); font-size: 10px; font-weight: 800;
           padding: 4px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: .5px;
         }
+        /* FIX: badge-fav is now inside .hcard-img so it overlays the image correctly */
         .badge-fav {
           position: absolute; top: 12px; right: 12px; z-index: 3;
           width: 34px; height: 34px; border-radius: 50%;
@@ -706,6 +763,22 @@ export default function HomePage() {
         .empty h3 { font-size: 20px; font-weight: 700; color: var(--slate); }
         .empty p  { font-size: 14px; color: var(--muted); }
 
+        /* ── no-results (search specific) ── */
+        .no-results {
+          grid-column: 1 / -1; text-align: center; padding: 60px 24px;
+          display: flex; flex-direction: column; align-items: center; gap: 12px;
+        }
+        .no-results-icon { font-size: 40px; }
+        .no-results h3 { font-size: 18px; font-weight: 700; color: var(--slate); }
+        .no-results p  { font-size: 14px; color: var(--muted); }
+        .no-results button {
+          margin-top: 4px; padding: 10px 22px; border-radius: 100px;
+          background: var(--coral); color: white; border: none;
+          font-family: var(--font); font-size: 13.5px; font-weight: 700;
+          cursor: pointer; transition: filter .2s;
+        }
+        .no-results button:hover { filter: brightness(1.08); }
+
         /* ════ RESPONSIVE ════ */
         @media (max-width: 1200px) {
           .hotel-grid { grid-template-columns: repeat(3, 1fr); }
@@ -719,29 +792,29 @@ export default function HomePage() {
 
         /* ── MOBILE ≤ 768px ── */
         @media (max-width: 768px) {
-          /* hide desktop nav controls — touch ball handles them */
           .nav-links, .nav-user-pill, .nav-signin { display: none !important; }
           .nav { padding: 0 16px; height: 60px; }
           .mood-bar { top: 60px; }
 
-          /* hero */
           .hero-dest-strip { gap: 6px; margin-bottom: 22px; }
           .dest-chip { font-size: 12px; padding: 6px 12px; }
           .hero-content { padding: 0 16px; }
 
-          /* search becomes vertical */
+          /* search becomes vertical on mobile */
           .search-shell { border-radius: 16px; }
           .search-shell form { flex-direction: column; }
+          .search-bar-field {
+            border-right: none; border-bottom: 1px solid rgba(0,0,0,.07);
+            padding: 14px 16px 12px;
+          }
           .seg { border-right: none; border-bottom: 1px solid rgba(0,0,0,.07); padding: 14px 16px 12px; }
           .seg:last-of-type { border-bottom: none; }
           .search-btn { margin: 10px; border-radius: 12px; padding: 16px; justify-content: center; font-size: 15px; }
 
-          /* mood bar */
           .mood-inner { padding: 0 8px; }
           .mood-tab { padding: 11px 14px 9px; }
           .mood-label { font-size: 10px; }
 
-          /* grid 2 columns */
           .hotel-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
           .section { padding: 22px 12px 100px; }
           .section-top { margin-bottom: 18px; }
@@ -755,7 +828,6 @@ export default function HomePage() {
           .hero-scroll-cue { display: none; }
         }
 
-        /* ── Very small phones ≤ 380px ── */
         @media (max-width: 380px) {
           .hotel-grid { grid-template-columns: 1fr; }
           .hero-dest-strip { display: none; }
@@ -814,19 +886,27 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: .2, duration: .5 }}>
               {["Maldives", "Paris", "Bali", "Tokyo", "Santorini"].map(d => (
-                <button key={d} className="dest-chip" onClick={() => { setSearch(d); fetchHotels(); }}>
+                <button key={d} className="dest-chip" onClick={() => setSearch(d)}>
                   <span className="dot" />{d}
                 </button>
               ))}
             </motion.div>
 
+            {/* FIX: search form uses correct .search-bar-field class that now has CSS */}
             <motion.div className={`search-shell ${searchFocused ? "focused" : ""}`}
               initial={{ opacity: 0, y: 20, scale: .97 }} animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: .3, duration: .55 }}>
               <form onSubmit={handleSearch}>
-                <div className="seg" onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}>
-                  <label className="seg-label">Where to?</label>
-                  <input className="seg-input" placeholder="Search destinations" value={search} onChange={e => setSearch(e.target.value)} />
+                <div className="search-bar-field" onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}>
+                  <FiSearch size={18} className="search-bar-icon" />
+                  <input
+                    type="text"
+                    placeholder="Search destinations or hotels…"
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => setSearchFocused(false)}
+                  />
                 </div>
                 <div className="seg" onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}>
                   <label className="seg-label">Check-in</label>
@@ -895,13 +975,17 @@ export default function HomePage() {
         <div className="section">
           <div className="section-top">
             <h2 className="section-heading">
-              {activeCategory === "all"
-                ? <>Places people <em>love</em></>
-                : <>{moods.find(m => m.key === activeCategory)?.emoji} {moods.find(m => m.key === activeCategory)?.label} Stays</>
+              {search.trim()
+                ? <>Results for <em>"{search}"</em></>
+                : activeCategory === "all"
+                  ? <>Places people <em>love</em></>
+                  : <>{moods.find(m => m.key === activeCategory)?.emoji} {moods.find(m => m.key === activeCategory)?.label} Stays</>
               }
             </h2>
-            {!loading && hotels.length > 0 && (
-              <span className="section-count">{hotels.length} {hotels.length === 1 ? "property" : "properties"}</span>
+            {!loading && (
+              <span className="section-count">
+                {filteredHotels.length} {filteredHotels.length === 1 ? "property" : "properties"}
+              </span>
             )}
           </div>
 
@@ -915,61 +999,74 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-          ) : hotels.length === 0 ? (
-            <div className="hotel-grid">
-              <motion.div className="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <div className="empty-icon">🔍</div>
-                <h3>No stays found</h3>
-                <p>Try a different category or search term</p>
-              </motion.div>
-            </div>
           ) : (
-            <motion.div className="hotel-grid" variants={stagger} initial="hidden" animate="show">
-              {hotels.map((hotel, idx) => {
-                const img = hotel.images?.[0]?.url || fallbacks[idx % fallbacks.length];
-                const isFav = favorites.includes(hotel._id);
-                return (
-                  <motion.div key={hotel._id} className="hcard" variants={fadeUp}>
-                    <TiltCard>
-                      <Link to={`/hotel/${hotel._id}`} className="hcard-inner">
-                        <div className="hcard-img">
-                          <img src={img} alt={hotel.name} loading="lazy" />
-                          <div className="hcard-overlay" />
-                          <span className="badge-cat">{hotel.category}</span>
-                          <div className="hcard-quick">View details <FiArrowRight size={12}/></div>
-                        </div>
-                        <div className="hcard-body">
-                          <div className="hcard-row">
-                            <h3 className="hcard-name">{hotel.name}</h3>
-                            <div className="hcard-rating">
-                              <FiStar size={11} fill="currentColor"/>
-                              {hotel.rating?.toFixed(1) || "New"}
+            <motion.div variants={stagger} initial="hidden" animate="show" className="hotel-grid">
+              {filteredHotels.length === 0 ? (
+                /* FIX: use filteredHotels for empty check, not raw hotels */
+                <div className="no-results">
+                  <div className="no-results-icon">🔍</div>
+                  <h3>{search.trim() ? `No results for "${search}"` : "No stays found"}</h3>
+                  <p>{search.trim() ? "Try a different name or city" : "Try a different category"}</p>
+                  {search.trim() && (
+                    <button onClick={() => setSearch("")}>Clear search</button>
+                  )}
+                </div>
+              ) : (
+                filteredHotels.map((hotel, i) => {
+                  /* FIX: isFav was undefined — define it per card */
+                  const isFav = favorites.includes(hotel._id);
+                  return (
+                    <motion.div variants={fadeUp} key={hotel._id}>
+                      <TiltCard>
+                        {/* FIX: hcard is the Link itself so hover CSS selectors work */}
+                        <Link to={`/hotel/${hotel._id}`} className="hcard">
+                          <div className="hcard-img">
+                            <img
+                              src={hotel.images?.[0]?.url || fallbacks[i % fallbacks.length]}
+                              alt={hotel.name}
+                              loading="lazy"
+                            />
+                            <div className="hcard-overlay" />
+                            <span className="badge-cat">{hotel.category}</span>
+                            {/* FIX: badge-fav inside hcard-img so it overlays correctly */}
+                            <button
+                              className={`badge-fav ${isFav ? "active" : ""}`}
+                              onClick={e => { e.preventDefault(); toggleFav(hotel._id); }}
+                              aria-label="Save"
+                            >
+                              <FiHeart size={14}/>
+                            </button>
+                            <div className="hcard-quick">View details <FiArrowRight size={12}/></div>
+                          </div>
+                          <div className="hcard-body">
+                            <div className="hcard-row">
+                              <h3 className="hcard-name">{hotel.name}</h3>
+                              <div className="hcard-rating">
+                                <FiStar size={11} fill="currentColor"/>
+                                {hotel.rating?.toFixed(1) || "New"}
+                              </div>
+                            </div>
+                            <p className="hcard-loc"><FiMapPin size={11}/> {hotel.location || hotel.city}</p>
+                            <div className="hcard-foot">
+                              <div className="hcard-price">
+                                <b>₹{(hotel.pricePerNight ?? hotel.price)?.toLocaleString()}</b>
+                                <span> / night</span>
+                              </div>
+                              {hotel.availableRooms > 0 ? (
+                                <span className={`avail-pill ${hotel.availableRooms <= 3 ? "avail-low" : "avail-ok"}`}>
+                                  {hotel.availableRooms <= 3 ? `Only ${hotel.availableRooms} left` : `${hotel.availableRooms} rooms`}
+                                </span>
+                              ) : (
+                                <span className="avail-pill avail-sold">Sold out</span>
+                              )}
                             </div>
                           </div>
-                          <p className="hcard-loc"><FiMapPin size={11}/> {hotel.location}</p>
-                          <div className="hcard-foot">
-                            <div className="hcard-price">
-                              <b>₹{hotel.pricePerNight?.toLocaleString()}</b>
-                              <span> / night</span>
-                            </div>
-                            {hotel.availableRooms > 0 ? (
-                              <span className={`avail-pill ${hotel.availableRooms <= 3 ? "avail-low" : "avail-ok"}`}>
-                                {hotel.availableRooms <= 3 ? `Only ${hotel.availableRooms} left` : `${hotel.availableRooms} rooms`}
-                              </span>
-                            ) : (
-                              <span className="avail-pill avail-sold">Sold out</span>
-                            )}
-                          </div>
-                        </div>
-                      </Link>
-                    </TiltCard>
-                    <button className={`badge-fav ${isFav ? "active" : ""}`}
-                      onClick={e => { e.preventDefault(); toggleFav(hotel._id); }} aria-label="Save">
-                      <FiHeart size={14}/>
-                    </button>
-                  </motion.div>
-                );
-              })}
+                        </Link>
+                      </TiltCard>
+                    </motion.div>
+                  );
+                })
+              )}
             </motion.div>
           )}
         </div>
