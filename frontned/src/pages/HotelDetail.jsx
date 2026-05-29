@@ -77,12 +77,15 @@ export default function HotelDetail() {
     if (nights <= 0) { toast.error("Check-out must be after check-in"); return; }
     setBookingLoading(true);
     try {
+      const guests = Number(bookingForm.guests) || 1;
+      const roomsNeeded = Number(bookingForm.rooms) || 1;
+
       const bookingRes = await axios.post(`${API}/bookings`, {
         hotelId: id,
         checkIn: bookingForm.checkIn,
         checkOut: bookingForm.checkOut,
-        guests: bookingForm.guests,
-        roomsNeeded: bookingForm.rooms,
+        guests,
+        roomsNeeded,
         paymentMethod: bookingForm.paymentMethod,
       }, { headers: { Authorization: `Bearer ${token}` } });
 
@@ -157,7 +160,8 @@ export default function HotelDetail() {
       rzp.open();
       toast("Complete payment in the Razorpay window", { icon: "💳" });
     } catch (err) {
-      toast.error(err.response?.data?.message || "Booking failed");
+      console.error("Booking API failed:", err.response?.data || err.message);
+      toast.error(err.response?.data?.message || err.response?.data?.error || "Booking failed");
       setBookingLoading(false);
     }
   };
