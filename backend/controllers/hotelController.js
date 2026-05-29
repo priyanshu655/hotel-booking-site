@@ -1,8 +1,32 @@
 const Hotel = require("../models/Hotel");
 const Booking = require("../models/Booking");
 const { cloudinary } = require("../config/cloudinary");
+const redisClient = require("../config/redis");
 
 const getAvailableRooms = (hotel) => hotel.availableRooms ?? hotel.rooms;
+const HOTEL_LIST_CACHE_VERSION_KEY = "cache:hotels:version";
+
+const buildHotelListCacheKey = (query, version) => {
+  const parts = Object.entries(query || {})
+    .filter(([, value]) => value !== undefined && value !== null && value !== "")
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([key, value]) => `${key}=${Array.isArray(value) ? value.join(",") : String(value)}`);
+
+  return `hotels:v${version}:${parts.length > 0 ? parts.join("&") : "all"}`;
+};
+
+const getHotelListCacheVersion = async () => {
+  if (!redisClient) return 0;
+
+  const version = await redisClient.get(HOTEL_LIST_CACHE_VERSION_KEY);
+  return Number(version || 0);
+};
+
+const bumpHotelListCacheVersion = async () => {
+  if (!redisClient) return;
+
+  await redisClient.incr(HOTEL_LIST_CACHE_VERSION_KEY);
+};
 
 // GET all hotels (with optional filters)
 exports.getHotels = async (req, res) => {
@@ -18,6 +42,15 @@ exports.getHotels = async (req, res) => {
       checkOut,
     } = req.query;
     const filter = {};
+    const cacheVersion = await getHotelListCacheVersion();
+    const cacheKey = buildHotelListCacheKey(req.query, cacheVersion);
+
+    if (redisClient) {
+      const cachedHotels = await redisClient.get(cacheKey);
+      if (cachedHotels) {
+        return res.json(JSON.parse(cachedHotels));
+      }
+    }
 
     if (category) filter.category = category;
     if (minPrice || maxPrice) {
@@ -59,6 +92,12 @@ exports.getHotels = async (req, res) => {
     };
 
     const sortedHotels = sortHotels(hotels);
+
+    if (redisClient) {
+      await redisClient.set(cacheKey, JSON.stringify(sortedHotels), {
+        ex: 300,
+      });
+    }
 
     res.json(sortedHotels);
   } catch (err) {
@@ -108,6 +147,8 @@ exports.createHotel = async (req, res) => {
       createdBy: req.userId,
     });
 
+    await bumpHotelListCacheVersion();
+
     res.status(201).json({ message: "Hotel created", hotel });
   } catch (err) {
     res.status(400).json({ message: "Error creating hotel", error: err.message });
@@ -140,6 +181,7 @@ exports.deleteHotel = async (req, res) => {
     }
 
     await Hotel.findByIdAndDelete(req.params.id);
+    await bumpHotelListCacheVersion();
     res.json({ message: "Hotel deleted" });
   } catch (err) {
     res.status(500).json({ message: "Error deleting hotel", error: err.message });

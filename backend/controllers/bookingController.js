@@ -1,6 +1,15 @@
 const mongoose = require("mongoose");
 const Booking = require("../models/Booking");
 const Hotel = require("../models/Hotel");
+const redisClient = require("../config/redis");
+
+const HOTEL_LIST_CACHE_VERSION_KEY = "cache:hotels:version";
+
+const bumpHotelListCacheVersion = async () => {
+  if (!redisClient) return;
+
+  await redisClient.incr(HOTEL_LIST_CACHE_VERSION_KEY);
+};
 
 // CREATE booking
 exports.createBooking = async (req, res) => {
@@ -72,6 +81,7 @@ exports.createBooking = async (req, res) => {
     ], { session });
 
     await session.commitTransaction();
+    await bumpHotelListCacheVersion();
 
     res.status(201).json({ message: "Booking confirmed!", booking });
   } catch (err) {
@@ -126,6 +136,7 @@ exports.cancelBooking = async (req, res) => {
     await booking.save({ session });
 
     await session.commitTransaction();
+    await bumpHotelListCacheVersion();
 
     res.json({ message: "Booking cancelled", booking });
   } catch (err) {
