@@ -13,6 +13,7 @@ const cors=require('cors');
 const { apiLimiter } = require("./middleware/rateLimiters");
 
 connectDb();
+app.set("trust proxy", 1);
 app.use(express.json());
 
 // CORS configuration

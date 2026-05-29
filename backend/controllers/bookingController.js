@@ -70,7 +70,7 @@ exports.createBooking = async (req, res) => {
         $inc: { availableRooms: -numRooms },
       },
       {
-        new: true,
+        returnDocument: "after",
         session,
       }
     );

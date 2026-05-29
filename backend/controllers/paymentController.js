@@ -99,7 +99,7 @@ exports.verifyPayment = async (req, res) => {
         signature: resolvedSignature,
         status: "completed",
       },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     if (!payment) {
@@ -116,7 +116,7 @@ exports.verifyPayment = async (req, res) => {
         orderId: resolvedOrderId,
         status: "confirmed",
       },
-      { new: true }
+      { returnDocument: "after" }
     )
       : null;
 
