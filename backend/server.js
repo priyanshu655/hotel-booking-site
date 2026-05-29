@@ -10,6 +10,7 @@ const bookingRoutes=require('./routes/bookingRoutes');
 const paymentRoutes=require('./routes/paymentRoutes');
 const tripRoutes=require('./routes/tripRoutes');
 const cors=require('cors');
+const { apiLimiter } = require("./middleware/rateLimiters");
 
 connectDb();
 app.use(express.json());
@@ -40,6 +41,7 @@ app.use(cors({
     credentials: true,
 }));
 
+app.use("/api", apiLimiter);
 app.use("/api/auth",authRoutes);
 app.use("/api/hotels",hotelRoutes);
 app.use("/api/bookings",bookingRoutes);
