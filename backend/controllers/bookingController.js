@@ -1,13 +1,17 @@
+const mongoose = require("mongoose");
 const Booking = require("../models/Booking");
 const Hotel = require("../models/Hotel");
 
 // CREATE booking
 exports.createBooking = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
     const { hotelId, checkIn, checkOut, guests, roomsNeeded, paymentMethod } = req.body;
 
-    const hotel = await Hotel.findById(hotelId);
-    if (!hotel) return res.status(404).json({ message: "Hotel not found" });
+    const hotelExists = await Hotel.exists({ _id: hotelId });
+    if (!hotelExists) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
 
     const numRooms = Number(roomsNeeded) || 1;
 
@@ -20,31 +24,31 @@ exports.createBooking = async (req, res) => {
         .json({ message: "Check-out must be after check-in" });
     }
 
-    // Find overlapping bookings
-    const overlappingBookings = await Booking.find({
-      hotel: hotelId,
-      $or: [
-        { checkIn: { $lt: checkOutDate, $gte: checkInDate } },
-        { checkOut: { $gt: checkInDate, $lte: checkOutDate } },
-        {
-          $and: [
-            { checkIn: { $lte: checkInDate } },
-            { checkOut: { $gte: checkOutDate } },
+    session.startTransaction();
+
+    const hotel = await Hotel.findOneAndUpdate(
+      {
+        _id: hotelId,
+        $expr: {
+          $gte: [
+            { $ifNull: ["$availableRooms", "$rooms"] },
+            numRooms,
           ],
         },
-      ],
-    });
-
-    const bookedRooms = overlappingBookings.reduce(
-      (acc, booking) => acc + booking.roomsBooked,
-      0
+      },
+      {
+        $inc: { availableRooms: -numRooms },
+      },
+      {
+        new: true,
+        session,
+      }
     );
 
-    const availableRooms = hotel.rooms - bookedRooms;
-
-    if (availableRooms < numRooms) {
+    if (!hotel) {
+      await session.abortTransaction();
       return res.status(400).json({
-        message: `Only ${availableRooms} room(s) available for the selected dates`,
+        message: "Not enough rooms available for booking",
       });
     }
 
@@ -53,22 +57,34 @@ exports.createBooking = async (req, res) => {
     );
     const totalPrice = nights * hotel.pricePerNight * numRooms;
 
-    const booking = await Booking.create({
-      hotel: hotelId,
-      user: req.userId,
-      checkIn: checkInDate,
-      checkOut: checkOutDate,
-      guests: Number(guests),
-      roomsBooked: numRooms,
-      totalPrice,
-      paymentMethod: paymentMethod || "credit_card",
-    });
+    const [booking] = await Booking.create([
+      {
+        hotel: hotelId,
+        user: req.userId,
+        checkIn: checkInDate,
+        checkOut: checkOutDate,
+        guests: Number(guests),
+        roomsBooked: numRooms,
+        totalPrice,
+        status: "pending",
+        paymentMethod: paymentMethod || "credit_card",
+      },
+    ], { session });
+
+    await session.commitTransaction();
 
     res.status(201).json({ message: "Booking confirmed!", booking });
   } catch (err) {
+    try {
+      await session.abortTransaction();
+    } catch (abortErr) {
+      // ignore abort errors and return the original failure
+    }
     res
       .status(400)
       .json({ message: "Error creating booking", error: err.message });
+  } finally {
+    session.endSession();
   }
 };
 
@@ -86,18 +102,40 @@ exports.getMyBookings = async (req, res) => {
 
 // CANCEL booking
 exports.cancelBooking = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
-    const booking = await Booking.findOne({ _id: req.params.id, user: req.userId });
-    if (!booking) return res.status(404).json({ message: "Booking not found" });
+    session.startTransaction();
+
+    const booking = await Booking.findOne({ _id: req.params.id, user: req.userId }).session(session);
+    if (!booking) {
+      await session.abortTransaction();
+      return res.status(404).json({ message: "Booking not found" });
+    }
     if (booking.status === "cancelled") {
+      await session.abortTransaction();
       return res.status(400).json({ message: "Booking already cancelled" });
     }
 
+    await Hotel.findByIdAndUpdate(
+      booking.hotel,
+      { $inc: { availableRooms: booking.roomsBooked } },
+      { session }
+    );
+
     booking.status = "cancelled";
-    await booking.save();
+    await booking.save({ session });
+
+    await session.commitTransaction();
 
     res.json({ message: "Booking cancelled", booking });
   } catch (err) {
+    try {
+      await session.abortTransaction();
+    } catch (abortErr) {
+      // ignore abort errors and return the original failure
+    }
     res.status(500).json({ message: "Error cancelling booking", error: err.message });
+  } finally {
+    session.endSession();
   }
 };

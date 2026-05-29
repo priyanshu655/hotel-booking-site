@@ -868,7 +868,7 @@ const importData = async () => {
     }
 
     const sampleHotels = hotelsData.map((hotel) => {
-      return { ...hotel, createdBy: adminUser._id };
+      return { ...hotel, availableRooms: hotel.rooms, createdBy: adminUser._id };
     });
 
     await Hotel.insertMany(sampleHotels);

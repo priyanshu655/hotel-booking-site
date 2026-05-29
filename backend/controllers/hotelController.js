@@ -2,6 +2,8 @@ const Hotel = require("../models/Hotel");
 const Booking = require("../models/Booking");
 const { cloudinary } = require("../config/cloudinary");
 
+const getAvailableRooms = (hotel) => hotel.availableRooms ?? hotel.rooms;
+
 // GET all hotels (with optional filters)
 exports.getHotels = async (req, res) => {
   try {
@@ -34,77 +36,13 @@ exports.getHotels = async (req, res) => {
       filter.amenities = { $all: amenityList };
     }
 
-    let hotels;
-
-    if (checkIn && checkOut) {
-      const checkInDate = new Date(checkIn);
-      const checkOutDate = new Date(checkOut);
-
-      // Find bookings that overlap with the selected dates
-      const overlappingBookings = await Booking.find({
-        hotel: { $ne: null },
-        status: "confirmed",
-        $or: [
-          { checkIn: { $lt: checkOutDate, $gte: checkInDate } },
-          { checkOut: { $gt: checkInDate, $lte: checkOutDate } },
-          {
-            $and: [
-              { checkIn: { $lte: checkInDate } },
-              { checkOut: { $gte: checkOutDate } },
-            ],
-          },
-        ],
-      });
-
-      const hotelBookings = {}; // hotelId -> rooms booked
-      for (const booking of overlappingBookings) {
-        const hotelId = booking.hotel.toString();
-        if (!hotelBookings[hotelId]) {
-          hotelBookings[hotelId] = 0;
-        }
-        hotelBookings[hotelId] += booking.roomsBooked;
-      }
-
-      const allHotels = await Hotel.find(filter).populate(
-        "createdBy",
-        "username"
-      );
-
-      hotels = allHotels
-        .map((hotel) => {
-          const bookedRooms = hotelBookings[hotel._id.toString()] || 0;
-          const availableRooms = hotel.rooms - bookedRooms;
-          return {
-            ...hotel.toObject(),
-            availableRooms: availableRooms,
-          };
-        })
-        .filter((hotel) => hotel.availableRooms > 0);
-    } else {
-      // When no dates provided, calculate available rooms from all confirmed bookings
-      const allHotels = await Hotel.find(filter).populate("createdBy", "username");
-      
-      // Get all confirmed bookings
-      const allBookings = await Booking.find({ hotel: { $ne: null }, status: "confirmed" });
-      
-      const hotelBookings = {}; // hotelId -> total rooms booked
-      for (const booking of allBookings) {
-        const hotelId = booking.hotel.toString();
-        if (!hotelBookings[hotelId]) {
-          hotelBookings[hotelId] = 0;
-        }
-        hotelBookings[hotelId] += booking.roomsBooked;
-      }
-      
-      hotels = allHotels.map((hotel) => {
-        const bookedRooms = hotelBookings[hotel._id.toString()] || 0;
-        const availableRooms = hotel.rooms - bookedRooms;
-        return {
-          ...hotel.toObject(),
-          availableRooms: Math.max(0, availableRooms),
-        };
-      });
-    }
+    const allHotels = await Hotel.find(filter).populate("createdBy", "username");
+    const hotels = allHotels
+      .map((hotel) => ({
+        ...hotel.toObject(),
+        availableRooms: Math.max(0, getAvailableRooms(hotel)),
+      }))
+      .filter((hotel) => hotel.availableRooms > 0);
 
     // Sorting
     const sortHotels = (arr) => {
@@ -112,7 +50,7 @@ exports.getHotels = async (req, res) => {
         if (sort === "price_asc") return a.pricePerNight - b.pricePerNight;
         if (sort === "price_desc") return b.pricePerNight - a.pricePerNight;
         if (sort === "rating") return b.rating - a.rating;
-        if (sort === "available" && checkIn && checkOut)
+        if (sort === "available")
           return b.availableRooms - a.availableRooms;
         // Default sort by creation date if no other sort is specified
         if (a.createdAt && b.createdAt) return b.createdAt - a.createdAt;
@@ -135,7 +73,10 @@ exports.getHotel = async (req, res) => {
   try {
     const hotel = await Hotel.findById(req.params.id).populate("createdBy", "username");
     if (!hotel) return res.status(404).json({ message: "Hotel not found" });
-    res.json(hotel);
+    res.json({
+      ...hotel.toObject(),
+      availableRooms: Math.max(0, getAvailableRooms(hotel)),
+    });
   } catch (err) {
     res.status(500).json({ message: "Error fetching hotel", error: err.message });
   }
@@ -161,6 +102,7 @@ exports.createHotel = async (req, res) => {
       amenities: amenities ? (typeof amenities === "string" ? JSON.parse(amenities) : amenities) : [],
       images,
       rooms: totalRooms,
+      availableRooms: totalRooms,
       category: category || "budget",
       featured: featured === "true" || featured === true,
       createdBy: req.userId,

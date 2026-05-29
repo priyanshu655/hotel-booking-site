@@ -15,6 +15,7 @@ const hotelSchema = new mongoose.Schema(
       },
     ],
     rooms: { type: Number, required: true, default: 20 },
+    availableRooms: { type: Number, required: true, default: function () { return this.rooms; }, min: 0 },
     category: {
       type: String,
       enum: ["luxury", "budget", "boutique", "resort", "business"],

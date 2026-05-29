@@ -6,6 +6,7 @@ const router = express.Router();
 
 // Create payment order
 router.post("/create-order", authMiddleware, createPaymentOrder);
+router.post("/create/orderId", authMiddleware, createPaymentOrder);
 
 // Verify payment
 router.post("/verify", authMiddleware, verifyPayment);
