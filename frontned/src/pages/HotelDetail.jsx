@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import {
   FiMapPin, FiStar, FiArrowLeft, FiCalendar, FiUsers, FiCheck,
   FiWifi, FiCoffee, FiDroplet, FiWind, FiTv, FiShield,
@@ -45,22 +45,24 @@ export default function HotelDetail() {
     { value: "wallet", label: "Wallet" },
   ];
 
-  useEffect(() => {
-    fetchHotel();
-    const fn = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
-  }, [id]);
-
-  const fetchHotel = async () => {
+  const fetchHotel = useCallback(async () => {
     try {
       const res = await axios.get(`${API}/hotels/${id}`);
       setHotel(res.data);
     } catch {
       toast.error("Hotel not found");
       navigate("/");
-    } finally { setLoading(false); }
-  };
+    } finally {
+      setLoading(false);
+    }
+  }, [id, navigate]);
+
+  useEffect(() => {
+    fetchHotel();
+    const fn = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, [id, fetchHotel]);
 
   const calculateNights = () => {
     if (!bookingForm.checkIn || !bookingForm.checkOut) return 0;
@@ -75,7 +77,7 @@ export default function HotelDetail() {
     if (nights <= 0) { toast.error("Check-out must be after check-in"); return; }
     setBookingLoading(true);
     try {
-      await axios.post(`${API}/bookings`, {
+      const bookingRes = await axios.post(`${API}/bookings`, {
         hotelId: id,
         checkIn: bookingForm.checkIn,
         checkOut: bookingForm.checkOut,
@@ -83,12 +85,81 @@ export default function HotelDetail() {
         roomsNeeded: bookingForm.rooms,
         paymentMethod: bookingForm.paymentMethod,
       }, { headers: { Authorization: `Bearer ${token}` } });
-      toast.success("Booking confirmed!");
-      setBookingForm({ checkIn: "", checkOut: "", guests: 1, rooms: 1, paymentMethod: "credit_card" });
-      fetchHotel();
+
+      const booking = bookingRes.data?.booking;
+      if (!booking?._id) {
+        throw new Error("Booking creation failed");
+      }
+
+      const { data: order } = await axios.post(
+        `${API}/payments/create-order`,
+        {
+          bookingId: booking._id,
+          amount: totalPrice,
+          totalAmount: totalPrice,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (!window.Razorpay) {
+        throw new Error("Razorpay checkout failed to load");
+      }
+
+      const options = {
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Planora",
+        description: `Payment for ${hotel.name}`,
+        order_id: order.id,
+        prefill: {
+          name: bookingForm.guests ? "Guest" : "",
+          email: "guest@example.com",
+          contact: "9000090000",
+        },
+        theme: {
+          color: "#FF385C",
+        },
+        handler: async (response) => {
+          try {
+            await axios.post(
+              `${API}/payments/verify`,
+              {
+                bookingId: booking._id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+            toast.success("Payment successful, booking confirmed!");
+            setBookingForm({ checkIn: "", checkOut: "", guests: 1, rooms: 1, paymentMethod: "credit_card" });
+            fetchHotel();
+          } catch (paymentErr) {
+            toast.error(paymentErr.response?.data?.message || "Payment verification failed");
+          } finally {
+            setBookingLoading(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setBookingLoading(false);
+            toast("Payment popup closed", { icon: "ℹ️" });
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", (response) => {
+        setBookingLoading(false);
+        toast.error(response.error?.description || "Payment failed");
+      });
+      rzp.open();
+      toast("Complete payment in the Razorpay window", { icon: "💳" });
     } catch (err) {
       toast.error(err.response?.data?.message || "Booking failed");
-    } finally { setBookingLoading(false); }
+      setBookingLoading(false);
+    }
   };
 
   if (loading) return (
@@ -509,7 +580,7 @@ export default function HotelDetail() {
         <div className="page">
 
           {/* ── HOTEL HEADER ── */}
-          <motion.div
+          <Motion.div
             className="hotel-header"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -529,10 +600,10 @@ export default function HotelDetail() {
               <span className="hm-badge hm-badge-cat">{hotel.category}</span>
               {hotel.featured && <span className="hm-badge hm-badge-feat">Guest favourite</span>}
             </div>
-          </motion.div>
+          </Motion.div>
 
           {/* ── GALLERY ── */}
-          <motion.div
+          <Motion.div
             className="gallery"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -541,7 +612,7 @@ export default function HotelDetail() {
             {/* Main image */}
             <div className="gallery-main">
               <AnimatePresence mode="wait">
-                <motion.img
+                <Motion.img
                   key={activeImg}
                   src={images[activeImg]?.url}
                   alt={hotel.name}
@@ -578,20 +649,20 @@ export default function HotelDetail() {
                 </button>
               </div>
             )}
-          </motion.div>
+          </Motion.div>
 
           {/* ── BODY ── */}
           <div className="body-grid">
 
             {/* LEFT — info */}
-            <motion.div
+            <Motion.div
               className="info"
               variants={{ show: { transition: { staggerChildren: 0.08 } } }}
               initial="hidden"
               animate="show"
             >
               {/* Stats */}
-              <motion.div className="info-section" variants={fadeUp}>
+              <Motion.div className="info-section" variants={fadeUp}>
                 <div className="stats-row">
                   <div className="stat-item">
                     <span className="stat-num">{hotel.rooms}</span>
@@ -613,17 +684,17 @@ export default function HotelDetail() {
                   if (r <= 3)  return <div className="avail-bar low"><span className="avail-dot" /> Only {r} room{r > 1 ? "s" : ""} left</div>;
                   return <div className="avail-bar ok"><span className="avail-dot" /> {r} rooms available</div>;
                 })()}
-              </motion.div>
+              </Motion.div>
 
               {/* About */}
-              <motion.div className="info-section" variants={fadeUp}>
+              <Motion.div className="info-section" variants={fadeUp}>
                 <h2 className="info-section-title">About this property</h2>
                 <p className="info-section-body">{hotel.description}</p>
-              </motion.div>
+              </Motion.div>
 
               {/* Amenities */}
               {hotel.amenities?.length > 0 && (
-                <motion.div className="info-section" variants={fadeUp}>
+                <Motion.div className="info-section" variants={fadeUp}>
                   <h2 className="info-section-title">What this place offers</h2>
                   <div className="amenities-grid">
                     {hotel.amenities.map(am => {
@@ -636,11 +707,11 @@ export default function HotelDetail() {
                       );
                     })}
                   </div>
-                </motion.div>
+                </Motion.div>
               )}
 
               {/* Location Map */}
-              <motion.div className="info-section" variants={fadeUp}>
+              <Motion.div className="info-section" variants={fadeUp}>
                 <h2 className="info-section-title">Where you'll be</h2>
                 <p className="info-section-body" style={{ marginBottom: "14px" }}>
                   <FiMapPin size={13} style={{ marginRight: 4, verticalAlign: "middle" }} />
@@ -663,12 +734,12 @@ export default function HotelDetail() {
                 >
                   <FiMapPin size={13} /> View on Google Maps
                 </a>
-              </motion.div>
+              </Motion.div>
 
-            </motion.div>
+            </Motion.div>
 
             {/* RIGHT — booking card */}
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
@@ -752,7 +823,7 @@ export default function HotelDetail() {
                   {/* Price summary */}
                   <AnimatePresence>
                     {nights > 0 && (
-                      <motion.div
+                      <Motion.div
                         className="bc-summary"
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
@@ -773,11 +844,11 @@ export default function HotelDetail() {
                           <span>Total</span>
                           <span>₹{totalPrice.toLocaleString()}</span>
                         </div>
-                      </motion.div>
+                      </Motion.div>
                     )}
                   </AnimatePresence>
 
-                  <motion.button
+                  <Motion.button
                     type="submit"
                     className={`book-btn ${hotel.availableRooms === 0 ? "soldout" : ""}`}
                     disabled={bookingLoading || hotel.availableRooms === 0}
@@ -788,14 +859,14 @@ export default function HotelDetail() {
                       ? <span className="spinner" />
                       : hotel.availableRooms === 0
                         ? "Fully Booked"
-                        : "Reserve"
+                        : "Reserve & Pay"
                     }
-                  </motion.button>
+                  </Motion.button>
                 </form>
 
-                <p className="bc-note">You won't be charged yet</p>
+                <p className="bc-note">You’ll complete payment in the Razorpay popup</p>
               </div>
-            </motion.div>
+            </Motion.div>
 
           </div>
         </div>

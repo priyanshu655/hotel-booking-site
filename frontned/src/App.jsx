@@ -6,6 +6,7 @@ import MyBookings from "./pages/MyBookings";
 import AddHotel from "./pages/AddHotel";
 import TripPlanner from "./pages/TripPlanner";
 import SellerDashboard from "./pages/SellerDashboard";
+import PaymentDemo from "./pages/PaymentDemo";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/add-hotel" element={<AddHotel />} />
         <Route path="/trip-planner" element={<TripPlanner />} />
         <Route path="/seller-dashboard" element={<SellerDashboard />} />
+        <Route path="/payment-demo" element={<PaymentDemo />} />
       </Routes>
     </BrowserRouter>
   );

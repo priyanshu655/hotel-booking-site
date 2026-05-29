@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion as Motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import {
   FiSearch, FiMapPin, FiStar, FiSliders, FiHeart,
   FiLogOut, FiUser, FiCalendar, FiPlus, FiChevronDown, FiArrowRight, FiGrid, FiX,
@@ -55,11 +55,11 @@ const TiltCard = ({ children }) => {
   };
   const onLeave = () => { x.set(0); y.set(0); };
   return (
-    <motion.div ref={ref} onMouseMove={onMove} onMouseLeave={onLeave}
+    <Motion.div ref={ref} onMouseMove={onMove} onMouseLeave={onLeave}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}>
       {children}
-    </motion.div>
+    </Motion.div>
   );
 };
 
@@ -67,7 +67,6 @@ const TiltCard = ({ children }) => {
    iPhone-style draggable floating ball
 ══════════════════════════════════════ */
 const TouchBall = ({ token, user, onLogout }) => {
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ x: window.innerWidth - 68, y: window.innerHeight - 160 });
   const dragging = useRef(false);
@@ -124,6 +123,7 @@ const TouchBall = ({ token, user, onLogout }) => {
     ...(token ? [
       { icon: <FiCalendar size={15}/>, label: "My Bookings", to: "/bookings" },
       { icon: <FiMapPin size={15}/>,   label: "Trip Planner", to: "/trip-planner" },
+      { icon: <FiArrowRight size={15}/>, label: "Razorpay Checkout", to: "/payment-demo" },
     ] : []),
     ...(token && (user?.role === "seller" || user?.role === "admin") ? [
       { icon: <FiPlus size={15}/>, label: "List Hotel",  to: "/add-hotel" },
@@ -144,7 +144,7 @@ const TouchBall = ({ token, user, onLogout }) => {
     >
       <AnimatePresence>
         {open && (
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, scale: 0.8, y: 12 }}
             animate={{ opacity: 1, scale: 1,   y: 0  }}
             exit  ={{ opacity: 0, scale: 0.8,   y: 12 }}
@@ -181,7 +181,7 @@ const TouchBall = ({ token, user, onLogout }) => {
             </div>
 
             {menuItems.map((item, i) => (
-              <motion.div key={i}
+              <Motion.div key={i}
                 initial={{ opacity: 0, x: snapLeft ? -12 : 12 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05 }}
@@ -209,13 +209,13 @@ const TouchBall = ({ token, user, onLogout }) => {
                     {item.icon}{item.label}
                   </button>
                 )}
-              </motion.div>
+              </Motion.div>
             ))}
-          </motion.div>
+          </Motion.div>
         )}
       </AnimatePresence>
 
-      <motion.div
+      <Motion.div
         animate={{ scale: open ? 0.9 : 1 }}
         style={{
           width: 52, height: 52, borderRadius: "50%",
@@ -239,7 +239,7 @@ const TouchBall = ({ token, user, onLogout }) => {
             <span style={{ display: "block", width: 19, height: 1.8, background: "rgba(255,255,255,0.9)", borderRadius: 2 }} />
           </>
         )}
-      </motion.div>
+      </Motion.div>
     </div>
   );
 };
@@ -283,7 +283,23 @@ export default function HomePage() {
     return () => clearInterval(t);
   }, []);
 
-  useEffect(() => { fetchHotels(); }, [activeCategory]);
+  const fetchHotels = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = {};
+      if (activeCategory !== "all") params.category = activeCategory;
+      if (checkIn) params.checkIn = checkIn;
+      if (checkOut) params.checkOut = checkOut;
+      const res = await axios.get(`${API}/hotels`, { params });
+      setHotels(res.data);
+    } catch {
+      setHotels([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeCategory, checkIn, checkOut]);
+
+  useEffect(() => { fetchHotels(); }, [fetchHotels]);
 
   useEffect(() => {
     if (token && !user) {
@@ -291,7 +307,7 @@ export default function HomePage() {
         .then(r => { if (r.data) { setUser(r.data); localStorage.setItem("planora_user", JSON.stringify(r.data)); } })
         .catch(err => console.error("Auth error:", err));
     }
-  }, [token]);
+  }, [token, user]);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 60);
@@ -338,22 +354,6 @@ export default function HomePage() {
 
     setFilteredHotels(results);
   }, [search, sort, hotels]);
-
-  const fetchHotels = async () => {
-    setLoading(true);
-    try {
-      const params = {};
-      if (activeCategory !== "all") params.category = activeCategory;
-      if (checkIn)  params.checkIn  = checkIn;
-      if (checkOut) params.checkOut = checkOut;
-      const res = await axios.get(`${API}/hotels`, { params });
-      setHotels(res.data);
-    } catch {
-      setHotels([]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   /* FIX: handleSearch no longer calls undefined setSearchQuery.
      The form submit just prevents default; live filtering is driven by
@@ -846,6 +846,7 @@ export default function HomePage() {
           <div className="nav-links">
             {token && <Link to="/bookings"        className="nav-link"><FiCalendar size={14}/> My Bookings</Link>}
             {token && <Link to="/trip-planner"    className="nav-link"><FiMapPin   size={14}/> Trip Planner</Link>}
+            {token && <Link to="/payment-demo"    className="nav-link"><FiArrowRight size={14}/> Razorpay Checkout</Link>}
             {token && (user?.role === "seller" || user?.role === "admin") && (
               <Link to="/add-hotel"         className="nav-link"><FiPlus size={14}/> List Hotel</Link>
             )}
@@ -878,11 +879,11 @@ export default function HomePage() {
             <div className="hero-grain" />
           </div>
 
-          <motion.div className="hero-content"
+          <Motion.div className="hero-content"
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: .7, ease: [0.25, 0.46, 0.45, 0.94] }}>
 
-            <motion.div className="hero-dest-strip"
+            <Motion.div className="hero-dest-strip"
               initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: .2, duration: .5 }}>
               {["Maldives", "Paris", "Bali", "Tokyo", "Santorini"].map(d => (
@@ -890,10 +891,10 @@ export default function HomePage() {
                   <span className="dot" />{d}
                 </button>
               ))}
-            </motion.div>
+            </Motion.div>
 
             {/* FIX: search form uses correct .search-bar-field class that now has CSS */}
-            <motion.div className={`search-shell ${searchFocused ? "focused" : ""}`}
+            <Motion.div className={`search-shell ${searchFocused ? "focused" : ""}`}
               initial={{ opacity: 0, y: 20, scale: .97 }} animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: .3, duration: .55 }}>
               <form onSubmit={handleSearch}>
@@ -920,8 +921,8 @@ export default function HomePage() {
                   <FiSearch size={16}/> Search
                 </button>
               </form>
-            </motion.div>
-          </motion.div>
+            </Motion.div>
+          </Motion.div>
 
           <div className="hero-scroll-cue">
             <div className="scroll-line" />
@@ -948,7 +949,7 @@ export default function HomePage() {
               </button>
               <AnimatePresence>
                 {showSort && (
-                  <motion.div className="sort-menu"
+                  <Motion.div className="sort-menu"
                     initial={{ opacity: 0, y: -8, scale: .96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -8, scale: .96 }}
@@ -964,7 +965,7 @@ export default function HomePage() {
                         )}
                       </button>
                     ))}
-                  </motion.div>
+                  </Motion.div>
                 )}
               </AnimatePresence>
             </div>
@@ -1000,7 +1001,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <motion.div variants={stagger} initial="hidden" animate="show" className="hotel-grid">
+            <Motion.div variants={stagger} initial="hidden" animate="show" className="hotel-grid">
               {filteredHotels.length === 0 ? (
                 /* FIX: use filteredHotels for empty check, not raw hotels */
                 <div className="no-results">
@@ -1016,7 +1017,7 @@ export default function HomePage() {
                   /* FIX: isFav was undefined — define it per card */
                   const isFav = favorites.includes(hotel._id);
                   return (
-                    <motion.div variants={fadeUp} key={hotel._id}>
+                    <Motion.div variants={fadeUp} key={hotel._id}>
                       <TiltCard>
                         {/* FIX: hcard is the Link itself so hover CSS selectors work */}
                         <Link to={`/hotel/${hotel._id}`} className="hcard">
@@ -1063,11 +1064,11 @@ export default function HomePage() {
                           </div>
                         </Link>
                       </TiltCard>
-                    </motion.div>
+                    </Motion.div>
                   );
                 })
               )}
-            </motion.div>
+            </Motion.div>
           )}
         </div>
 
