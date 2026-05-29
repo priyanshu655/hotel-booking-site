@@ -18,14 +18,23 @@ const buildHotelListCacheKey = (query, version) => {
 const getHotelListCacheVersion = async () => {
   if (!redisClient) return 0;
 
-  const version = await redisClient.get(HOTEL_LIST_CACHE_VERSION_KEY);
-  return Number(version || 0);
+  try {
+    const version = await redisClient.get(HOTEL_LIST_CACHE_VERSION_KEY);
+    return Number(version || 0);
+  } catch (err) {
+    console.error("Redis cache version read failed:", err.message);
+    return 0;
+  }
 };
 
 const bumpHotelListCacheVersion = async () => {
   if (!redisClient) return;
 
-  await redisClient.incr(HOTEL_LIST_CACHE_VERSION_KEY);
+  try {
+    await redisClient.incr(HOTEL_LIST_CACHE_VERSION_KEY);
+  } catch (err) {
+    console.error("Redis cache version bump failed:", err.message);
+  }
 };
 
 // GET all hotels (with optional filters)
@@ -46,9 +55,13 @@ exports.getHotels = async (req, res) => {
     const cacheKey = buildHotelListCacheKey(req.query, cacheVersion);
 
     if (redisClient) {
-      const cachedHotels = await redisClient.get(cacheKey);
-      if (cachedHotels) {
-        return res.json(JSON.parse(cachedHotels));
+      try {
+        const cachedHotels = await redisClient.get(cacheKey);
+        if (cachedHotels) {
+          return res.json(JSON.parse(cachedHotels));
+        }
+      } catch (err) {
+        console.error("Redis cache read failed:", err.message);
       }
     }
 
@@ -94,9 +107,13 @@ exports.getHotels = async (req, res) => {
     const sortedHotels = sortHotels(hotels);
 
     if (redisClient) {
-      await redisClient.set(cacheKey, JSON.stringify(sortedHotels), {
-        ex: 300,
-      });
+      try {
+        await redisClient.set(cacheKey, JSON.stringify(sortedHotels), {
+          ex: 300,
+        });
+      } catch (err) {
+        console.error("Redis cache write failed:", err.message);
+      }
     }
 
     res.json(sortedHotels);
