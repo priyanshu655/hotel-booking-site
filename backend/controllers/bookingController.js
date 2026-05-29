@@ -8,7 +8,11 @@ const HOTEL_LIST_CACHE_VERSION_KEY = "cache:hotels:version";
 const bumpHotelListCacheVersion = async () => {
   if (!redisClient) return;
 
-  await redisClient.incr(HOTEL_LIST_CACHE_VERSION_KEY);
+  try {
+    await redisClient.incr(HOTEL_LIST_CACHE_VERSION_KEY);
+  } catch (err) {
+    console.error("Redis cache version bump failed:", err.message);
+  }
 };
 
 // CREATE booking
