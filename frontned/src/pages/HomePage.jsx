@@ -260,6 +260,7 @@ export default function HomePage() {
   const [bgIdx, setBgIdx]               = useState(0);
   const [searchFocused, setSearchFocused] = useState(false);
   const [isMobile, setIsMobile]         = useState(() => window.innerWidth <= 768);
+  const [loadError, setLoadError]       = useState("");
   const [favorites, setFavorites]       = useState(() => {
     try { return JSON.parse(localStorage.getItem("planora_favs")) || []; } catch { return []; }
   });
@@ -285,6 +286,7 @@ export default function HomePage() {
 
   const fetchHotels = useCallback(async () => {
     setLoading(true);
+    setLoadError("");
     try {
       const params = {};
       if (activeCategory !== "all") params.category = activeCategory;
@@ -292,7 +294,8 @@ export default function HomePage() {
       if (checkOut) params.checkOut = checkOut;
       const res = await axios.get(`${API}/hotels`, { params });
       setHotels(res.data);
-    } catch {
+    } catch (err) {
+      setLoadError(err.response?.data?.message || "Unable to load hotels right now.");
       setHotels([]);
     } finally {
       setLoading(false);
@@ -989,6 +992,21 @@ export default function HomePage() {
               </span>
             )}
           </div>
+
+          {!loading && loadError && (
+            <div style={{
+              marginBottom: 18,
+              padding: "14px 16px",
+              borderRadius: 14,
+              background: "#FEF2F2",
+              color: "#991B1B",
+              border: "1px solid #FECACA",
+              fontSize: 14,
+              fontWeight: 600,
+            }}>
+              {loadError}
+            </div>
+          )}
 
           {loading ? (
             <div className="hotel-grid">

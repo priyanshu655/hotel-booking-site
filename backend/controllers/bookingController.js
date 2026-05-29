@@ -17,15 +17,36 @@ exports.createBooking = async (req, res) => {
   try {
     const { hotelId, checkIn, checkOut, guests, roomsNeeded, paymentMethod } = req.body;
 
+    if (!mongoose.isValidObjectId(hotelId)) {
+      return res.status(400).json({ message: "Invalid hotel id" });
+    }
+
+    if (!checkIn || !checkOut) {
+      return res.status(400).json({ message: "Check-in and check-out dates are required" });
+    }
+
+    const guestCount = Number(guests);
+    const numRooms = Number(roomsNeeded) || 1;
+
+    if (!Number.isInteger(guestCount) || guestCount < 1) {
+      return res.status(400).json({ message: "Guests must be at least 1" });
+    }
+
+    if (!Number.isInteger(numRooms) || numRooms < 1) {
+      return res.status(400).json({ message: "Rooms needed must be at least 1" });
+    }
+
     const hotelExists = await Hotel.exists({ _id: hotelId });
     if (!hotelExists) {
       return res.status(404).json({ message: "Hotel not found" });
     }
 
-    const numRooms = Number(roomsNeeded) || 1;
-
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
+
+    if (Number.isNaN(checkInDate.getTime()) || Number.isNaN(checkOutDate.getTime())) {
+      return res.status(400).json({ message: "Invalid check-in or check-out date" });
+    }
 
     if (checkOutDate <= checkInDate) {
       return res
@@ -72,7 +93,7 @@ exports.createBooking = async (req, res) => {
         user: req.userId,
         checkIn: checkInDate,
         checkOut: checkOutDate,
-        guests: Number(guests),
+        guests: guestCount,
         roomsBooked: numRooms,
         totalPrice,
         status: "pending",
@@ -90,9 +111,9 @@ exports.createBooking = async (req, res) => {
     } catch (abortErr) {
       // ignore abort errors and return the original failure
     }
-    res
-      .status(400)
-      .json({ message: "Error creating booking", error: err.message });
+    const statusCode = err.name === "ValidationError" || err.name === "CastError" ? 400 : 500;
+    console.error("Create booking failed:", err);
+    res.status(statusCode).json({ message: "Error creating booking", error: err.message });
   } finally {
     session.endSession();
   }
